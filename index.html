@@ -110,8 +110,12 @@
             </div>
            </div>
            <div id="tab2" class="tab-content" style="display: none;">
-             <h2>Received to stealth address</h2>
-             <p>This is the content for Tab 2.</p>
+             <h2>Press button to start parsing for your stealth addresses</h2>
+             <div class="form-group">
+               <button id="parse-btn" class="btn btn-primary btn-block">Parse</button>
+               <textarea id="parsing-output-stealth-address" class="form-control d-none" rows="3"></textarea>
+               <textarea id="parsing-output-stealth-privat-key" class="form-control d-none" rows="3"></textarea>
+             </div>
            </div>
          </div>
        </div>
@@ -131,6 +135,8 @@
         const userAddressElement = document.getElementById('user-address');
         const interactionElements = document.getElementById('user-stealth-meta-address');
         const userStealthMetaAddressElement = document.getElementById('userstealthmetaaddress');
+        const parsingOutputStealthAddress = document.getElementById('parsing-output-stealth-address');
+        const parsingOutputPrivatKey = document.getElementById('parsing-output-stealth-privat-key');
         const loginPage = document.getElementById('login');
 
         document.getElementById('tab1-btn').addEventListener('click', function () {
@@ -204,8 +210,15 @@
           const keyPair1 = new ethers.Wallet(privateKey1.toHexString());
           const keyPair2 = new ethers.Wallet(privateKey2.toHexString());
 
+          window.spendingPrivatKey = keyPair1.privateKey;
+          window.viewingPrivatKey = keyPair2.privateKey;
+
+
            const spendingPublicKey = ethers.utils.computePublicKey(keyPair1.privateKey, true);
            const viewingPublicKey = ethers.utils.computePublicKey(keyPair2.privateKey, true);
+
+           window.spendingPublicKey = spendingPublicKey;
+           window.viewingPublicKey = viewingPublicKey;
 
            userStealthMetaAddressElement.innerHTML = `st:eth:${spendingPublicKey}${viewingPublicKey.slice(2,)}`;
            interactionElements.classList.remove('d-none');
@@ -218,22 +231,100 @@
           }
         });
 
-        document.getElementById('send-btn').addEventListener('click', function (e) {
-          e.preventDefault();
-          var inputStealthMetaAddress = document.querySelector('#input-stealth-meta-address').value;
-          var inputAmount = document.querySelector('#input-amount');
-          if (!(inputStealthMetaAddress.startsWith("st:eth:0x")) || (inputStealthMetaAddress.length != 141)) {
-            outputField.value = "Input a valid stealth meta-address starting with st:eth:0x;";
-          }
-          else {
-            try {
-              var stealthAddressInfo = generateStealthInfo(inputStealthMetaAddress);
-              console.log(stealthAddressInfo);
-            } catch (error) {
-              console.log(error);
-            }
-          }
-        });
+        window.skipParsingIteration = 0;
+        document.getElementById('parse-btn').addEventListener('click', async function () {
+          // Get the input values
+          const spendingPublicKey = window.spendingPublicKey;
+          const viewingPrivatKey = window.viewingPrivatKey;
+          fetch('https://europe-west3-ethereum-data-nero.cloudfunctions.net/csv_to_json').then(response => response.text()).then(data => {
+              const rows = JSON.parse(data);
+              console.log(JSON.parse(data));
+              for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+              }
+              window.announcements = rows;
+              var foundStealthAddresses = 0;
+              for (let i = 0; i < rows.length; i++) {
+                var announcement = window.announcements[i];
+                if (!announcement["ephemeralPubKey"]) {
+                  continue;
+                }
+                console.log(spendingPublicKey);
+                console.log(viewingPrivatKey);
+
+                var stealthInfo = parseStealthAddresses(
+                  announcement["ephemeralPubKey"],
+                  announcement["stealthAddress"].toLowerCase(),
+                  spendingPublicKey,
+                  viewingPrivatKey,
+                  announcement["metadata"].slice(2,4)
+                );
+                window.foundStealthInfo = false;
+                if (stealthInfo === false) {
+                  continue;
+                }
+                foundStealthAddresses += 1;
+                if (foundStealthAddresses <= window.skipParsingIteration) {
+                  continue;
+                }
+                window.foundStealthInfo = true;
+                window.skipParsingIteration += 1;
+                var stealthAddress = stealthInfo[0];
+                var ephemeralPublicKey = stealthInfo[1];
+                var hashedSharedSecret = stealthInfo[2];
+
+                var stealthPrivatKey = (BigInt(window.spendingPrivatKey) + BigInt(hashedSharedSecret)) % BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141");
+                stealthPrivatKeyString = stealthPrivatKey.toString(16);
+                stealthPrivatKeyString = "0x" + stealthPrivatKeyString.padStart(64, '0');
+                var stealthAddress = privToAddress(stealthPrivatKey);
+
+                parsingOutputStealthAddress.value = "Stealth Address: " + stealthAddress
+                parsingOutputPrivatKey.value = "Stealth Privat Key: " + stealthPrivatKeyString
+                parsingOutputStealthAddress.classList.remove('d-none');
+                parsingOutputPrivatKey.classList.remove('d-none');
+                document.getElementById('parse-btn').innerText = "Continue parsing";
+                break
+              }
+              if (window.foundStealthInfo === false) {
+                window.skipParsingIteration = 0;
+                parsingOutputStealthAddress.classList.remove('d-none');
+                parsingOutputPrivatKey.classList.remove('d-none');
+                parsingOutputStealthAddress.value = "Nothing found.";
+                parsingOutputPrivatKey.value = "Nothing found;"
+                parsingOutputStealthAddress.style["background-color"] = "#fa8c8c";
+                parsingOutputPrivatKey.style["background-color"] = "#fa8c8c";
+              } else {
+                parsingOutputStealthAddress.style["background-color"] = "#8cfa8e";
+                parsingOutputPrivatKey.style["background-color"] = "#8cfa8e";
+              }
+            }).catch(error => console.error(error));
+          });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         document.getElementById('send-btn').addEventListener('click', async function () {
           // Get the input values
@@ -254,7 +345,6 @@
               console.log(error);
             }
           }
-inputAmount
           // Convert the input amount from ETH to Wei
           const inputAmountWei = web3.utils.toWei(inputAmount, 'ether');
 
@@ -271,7 +361,7 @@ inputAmount
             to: contractAddress,
             value: inputAmountWei,
             data: transferAndAnnounceData,
-            gas: 150000, // Set an appropriate gas limit (you may need to adjust this value)
+            gas: 100000, // Set an appropriate gas limit (you may need to adjust this value)
           };
 
           // Send the transaction
