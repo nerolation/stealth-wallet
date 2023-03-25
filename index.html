@@ -78,34 +78,44 @@
     <div id="user-stealth-meta-address" class="d-none">
         <div class="row">
           <div class="col-md-6 offset-md-3">
-            <h4 class="text-center mb-4">Your Stealth Meta-Address:</h4>
+            <h4 class="text-center mt-3 mb-0">Your Stealth Meta-Address:</h4>
             <div id="userstealthmetaaddress" class="user-address"></div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-6 offset-md-3">
-            <div class="col px-0">
-              <button id="tab1-btn" type="button" class="btn btn-primary w-100">Send</button>
-            </div>
-            <div class="col px-0">
-              <button id="tab2-btn" type="button" class="btn btn-secondary w-100">Receive</button>
-            </div>
+        <div class="row mt-2">
+          <div class="col-md-6 offset-md-3 d-flex justify-content-center">
+                <button id="tab1-btn" type="button" class="btn btn-primary w-50">Send</button>
+                <button id="tab2-btn" type="button" class="btn btn-secondary w-50">Receive</button>
+              </div>
           </div>
-        </div>
 
-        <div class="row">
+        <div class="row mt-2">
           <div class="col-md-6 offset-md-3">
 
            <!-- Tab content -->
            <div id="tab1" class="tab-content">
-             <h2>Tab 1</h2>
-             <p>This is the content for Tab 1.</p>
+             <h2>Send to a stealth meta-address</h2>
+            <!-- Input fields -->
+            <div class="form-group">
+              <label for="input-string">Enter the stealth meta-address of the recipient:</label>
+              <input type="text" class="form-control" id="input-stealth-meta-address" placeholder="st:eth:0x...">
+            </div>
+            <div class="form-group">
+              <label for="input-amount">Enter amount in ETH:</label>
+              <input type="number" step="0.0001" class="form-control" id="input-amount" value="0.0001" placeholder="Enter amount in ETH" min="0">
+            </div>
+
+            <!-- Send button -->
+            <div class="form-group">
+              <button id="send-btn" class="btn btn-primary btn-block">Send</button>
+            </div>
            </div>
            <div id="tab2" class="tab-content" style="display: none;">
-             <h2>Tab 2</h2>
+             <h2>Received to stealth address</h2>
              <p>This is the content for Tab 2.</p>
            </div>
          </div>
+       </div>
        </div>
     </div>
 </div>
