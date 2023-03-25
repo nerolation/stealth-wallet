@@ -104,7 +104,6 @@
               <label for="input-amount">Enter amount in ETH:</label>
               <input type="number" step="0.0001" class="form-control" id="input-amount" value="0.0001" placeholder="Enter amount in ETH" min="0">
             </div>
-
             <!-- Send button -->
             <div class="form-group">
               <button id="send-btn" class="btn btn-primary btn-block">Send</button>
@@ -218,6 +217,85 @@
             personalSign.innerHTML = `Error: ${err.message}`;
           }
         });
+
+        document.getElementById('send-btn').addEventListener('click', function (e) {
+          e.preventDefault();
+          var inputStealthMetaAddress = document.querySelector('#input-stealth-meta-address').value;
+          var inputAmount = document.querySelector('#input-amount');
+          if (!(inputStealthMetaAddress.startsWith("st:eth:0x")) || (inputStealthMetaAddress.length != 141)) {
+            outputField.value = "Input a valid stealth meta-address starting with st:eth:0x;";
+          }
+          else {
+            try {
+              var stealthAddressInfo = generateStealthInfo(inputStealthMetaAddress);
+              console.log(stealthAddressInfo);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+        });
+
+        document.getElementById('send-btn').addEventListener('click', async function () {
+          // Get the input values
+          const inputStealthMetaAddress = document.getElementById('input-stealth-meta-address').value;
+          const inputAmount = document.getElementById('input-amount').value;
+
+          if (!(inputStealthMetaAddress.startsWith("st:eth:0x")) || (inputStealthMetaAddress.length != 141)) {
+            console.log("Input a valid stealth meta-address starting with st:eth:0x;");
+          } else {
+            try {
+              var stealthAddressInfo = generateStealthInfo(inputStealthMetaAddress);
+              console.log(stealthAddressInfo);
+              var sta = stealthAddressInfo["stealthAddress"];
+              var ephk = stealthAddressInfo["ephemeralPublicKey"];
+              var vt = stealthAddressInfo["ViewTag"];
+
+            } catch (error) {
+              console.log(error);
+            }
+          }
+inputAmount
+          // Convert the input amount from ETH to Wei
+          const inputAmountWei = web3.utils.toWei(inputAmount, 'ether');
+
+          // Get the current account
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          const fromAccount = accounts[0];
+
+          // Prepare the transaction data
+          const transferAndAnnounceData = contract.methods.transferAndAnnounce(sta, ephk, vt).encodeABI();
+
+          // Create the transaction object
+          const tx = {
+            from: fromAccount,
+            to: contractAddress,
+            value: inputAmountWei,
+            data: transferAndAnnounceData,
+            gas: 150000, // Set an appropriate gas limit (you may need to adjust this value)
+          };
+
+          // Send the transaction
+          web3.eth.sendTransaction(tx)
+            .on('transactionHash', function (hash) {
+              console.log('Transaction hash:', hash);
+            })
+            .on('receipt', function (receipt) {
+              console.log('Transaction receipt:', receipt);
+            })
+            .on('confirmation', function (confirmationNumber, receipt) {
+              console.log('Transaction confirmation number:', confirmationNumber);
+              console.log('Transaction receipt:', receipt);
+            })
+            .on('error', function (error) {
+              console.error('Transaction error:', error);
+            });
+        });
+
+        const contractABI = `[{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"schemeId","type":"uint256"},{"indexed":true,"internalType":"address","name":"stealthAddress","type":"address"},{"indexed":false,"internalType":"bytes","name":"ephemeralPubKey","type":"bytes"},{"indexed":false,"internalType":"bytes","name":"metadata","type":"bytes"}],"name":"Announcement","type":"event"},{"inputs":[{"internalType":"uint256","name":"schemeId","type":"uint256"},{"internalType":"address","name":"stealthAddress","type":"address"},{"internalType":"bytes",[{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"schemeId","type":"uint256"},{"indexed":true,"internalType":"address","name":"stealthAddress","type":"address"},{"indexed":false,"internalType":"bytes","name":"ephemeralPubKey","type":"bytes"},{"indexed":false,"internalType":"bytes","name":"metadata","type":"bytes"}],"name":"Announcement","type":"event"},{"inputs":[{"internalType":"uint256","name":"schemeId","type":"uint256"},{"internalType":"address","name":"stealthAddress","type":"address"},{"internalType":"bytes","name":"ephemeralPubKey","type":"bytes"},{"internalType":"bytes","name":"metadata","type":"bytes"}],"name":"announce","outputs":[],"stateMutability":"nonpayable","type":"function"}]"name":"ephemeralPubKey","type":"bytes"},{"internalType":"bytes","name":"metadata","type":"bytes"}],"name":"announce","outputs":[],"stateMutability":"nonpayable","type":"function"}]`;
+        const contractAddress = "0xb193dE1071fc1AF3FF1DF4c6d5091284274519EF";
+        const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+
       };
     </script>
   </body>
