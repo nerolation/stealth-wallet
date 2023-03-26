@@ -179,6 +179,17 @@
           document.execCommand('copy');
       }
 
+      function padToMin4Bytes(number) {
+          const targetLength = 8; // 32 bytes * 2 (each byte has 2 hex characters)
+
+          if (number.length >= targetLength) {
+            return number;
+          }
+
+          const zeroPadding = '0'.repeat(targetLength - number.length); // Calculate the required zero padding
+          return number + zeroPadding; // Append the zero padding to the end of the number
+      }
+
       window.onload = function() {
         document.getElementById('copybuttonSPK').addEventListener('click', function() {
             copyTextFromTextField('parsing-output-stealth-private-key');
@@ -399,6 +410,7 @@
               var sta = stealthAddressInfo["stealthAddress"];
               var ephk = stealthAddressInfo["ephemeralPublicKey"];
               var vt = stealthAddressInfo["ViewTag"];
+              vt = padToMin4Bytes(vt);
 
             } catch (error) {
               console.log(error);
