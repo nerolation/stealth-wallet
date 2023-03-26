@@ -1,7 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Landing Page</title>
+    <title>Stealth Wallet</title>
+    <meta charset="UTF-8">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@nero_eth">
+    <meta name="twitter:title" content="Stealth Wallet">
+    <meta name="twitter:description" content="Ethereum - Stealth Wallet">
+    <meta property="og:title" content="Stealth Addresses" relay="" api="" dashboard="">
+    <meta property="og:site_name" content="https://nerolation.github.io/stealth-wallet/">
+    <meta property="og:url" content="https://nerolation.github.io/stealth-wallet/">
+    <meta property="og:description" content="PoC Wallet Application supporting Stealth Addresses.">
+    <meta property="og:type" content="website">
+    <link rel="shortcut icon" href="https://mevboost.toniwahrstaetter.com/ethlogo.png">
+    <meta name="description" content="PoC Wallet Application supporting Stealth Addresses.">
+    <meta name="keywords" content="Ethereum, Stealth Addresses, Privacy, EIP-5564">
+    <meta name="author" content="Toni Wahrstätter">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
@@ -56,7 +71,7 @@
       <div class="row">
         <div class="col-md-6 offset-md-3">
           <h1 class="text-center mb-4">Stealth Wallet</h1>
-          <p class="text-center mb-4">Connect your Metamask wallet and sign a message</p>
+          <h5 class="text-center mb-4">Connect your Metamask wallet</h5>
           <div class="form-group">
             <button id="connect-wallet-btn" class="btn btn-primary btn-block">Connect Wallet</button>
           </div>
@@ -64,8 +79,8 @@
 
           <div id="login">
             <div class="form-group">
-              <label for="message-input">Message to sign:</label>
-              <textarea id="message-input" class="form-control" rows="3">Sign this message to login into you stealth wallet on Ethereum mainnet.</textarea>
+              <label for="message-input">Sign the following message to login:</label>
+              <textarea id="message-input" class="form-control" rows="3">I want to login into my stealth wallet on Ethereum mainnet.</textarea>
             </div>
             <div class="form-group">
               <button id="sign-message-btn" class="btn btn-primary btn-block">Sign Message</button>
@@ -79,7 +94,9 @@
         <div class="row">
           <div class="col-md-6 offset-md-3">
             <h4 class="text-center mt-3 mb-0">Your Stealth Meta-Address:</h4>
-            <div id="userstealthmetaaddress" class="user-address"></div>
+            <div id="stealth-meta-address" class="user-address"></div>
+            <button class="btn btn-primary btn-block mb-3" id="copybuttonSMA">Copy to Clipboard</button>
+
           </div>
         </div>
         <div class="row mt-2">
@@ -110,18 +127,32 @@
             </div>
            </div>
            <div id="tab2" class="tab-content" style="display: none;">
-             <h2>Press button to start parsing for your stealth addresses</h2>
-             <div class="form-group">
-               <button id="parse-btn" class="btn btn-primary btn-block">Parse</button>
-               <textarea id="parsing-output-stealth-address" class="form-control d-none" rows="3"></textarea>
-               <textarea id="parsing-output-stealth-privat-key" class="form-control d-none" rows="3"></textarea>
+             <h2> Receive to stealth address</h2>
+             <label for="input-string">Press button to start parsing for your stealth addresses:</label>
+             <button id="parse-btn" class="btn btn-primary btn-block">Parse</button>
+             <div id="parsing-form" class="form-group d-none">
+               <label for="input-string">Stealth Address:</label>
+               <textarea id="parsing-output-stealth-address" class="form-control" rows="2"></textarea>
+               <label for="input-string">Stealth Private Key:</label>
+               <textarea id="parsing-output-stealth-private-key" class="form-control" rows="3"></textarea>
+               <button id="copybuttonSPK">Copy to Clipboard</button>
              </div>
            </div>
          </div>
        </div>
        </div>
+       <div class="row">
+          <div class="col-md-6 offset-md-3">
+            <footer class="footer mt-auto py-3 bg-light">
+              <div class="container text-center">
+                <span style="font-size: 1.1rem;" class="text-muted">Check out <a href="https://nerolation.github.io/stealth-utils/" target="_blank">this</a> tutorial to find more info about stealth addresses.</span>
+                <br>
+                <span style="font-size: 1.15rem;" class="text-muted">&copy; <a href="https://twitter.com/nero_eth" target="_blank">Toni Wahrstätter</a> 2023</span>
+              </div>
+            </footer>
+          </div>
+        </div>
     </div>
-</div>
 
 
     <!-- Bootstrap JS -->
@@ -130,13 +161,42 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Custom JS -->
     <script>
+
+
+      function copyTextFromDiv(divID) {
+          const divText = document.getElementById(divID).innerText;
+          const textArea = document.createElement('textarea');
+          textArea.value = divText;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+      }
+
+      function copyTextFromTextField(textAreaID) {
+          const textArea = document.getElementById(textAreaID);
+          textArea.select();
+          document.execCommand('copy');
+      }
+
       window.onload = function() {
+        document.getElementById('copybuttonSPK').addEventListener('click', function() {
+            copyTextFromTextField('parsing-output-stealth-private-key');
+            document.getElementById('copybuttonSPK').innerText = "Copied";
+        });
+
+        document.getElementById('copybuttonSMA').addEventListener('click', function() {
+            copyTextFromDiv('stealth-meta-address');
+            document.getElementById('copybuttonSMA').innerText = "Copied";
+        });
+
         const web3 = new Web3(window.ethereum);
         const userAddressElement = document.getElementById('user-address');
         const interactionElements = document.getElementById('user-stealth-meta-address');
-        const userStealthMetaAddressElement = document.getElementById('userstealthmetaaddress');
+        const userStealthMetaAddressElement = document.getElementById('stealth-meta-address');
         const parsingOutputStealthAddress = document.getElementById('parsing-output-stealth-address');
-        const parsingOutputPrivatKey = document.getElementById('parsing-output-stealth-privat-key');
+        const parsingForm = document.getElementById('parsing-form');
+        const parsingOutputPrivateKey = document.getElementById('parsing-output-stealth-private-key');
         const loginPage = document.getElementById('login');
 
         document.getElementById('tab1-btn').addEventListener('click', function () {
@@ -182,7 +242,7 @@
           event.preventDefault();
           const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
           const account = accounts[0];
-          const exampleMessage = 'Sign this message to login into you stealth wallet on Ethereum mainnet.';
+          const exampleMessage = 'I want to login into my stealth wallet on Ethereum mainnet.';
           try {
             const from = accounts[0];
             const hexString = web3.utils.utf8ToHex(exampleMessage);
@@ -210,8 +270,8 @@
           const keyPair1 = new ethers.Wallet(privateKey1.toHexString());
           const keyPair2 = new ethers.Wallet(privateKey2.toHexString());
 
-          window.spendingPrivatKey = keyPair1.privateKey;
-          window.viewingPrivatKey = keyPair2.privateKey;
+          window.spendingPrivateKey = keyPair1.privateKey;
+          window.viewingPrivateKey = keyPair2.privateKey;
 
 
            const spendingPublicKey = ethers.utils.computePublicKey(keyPair1.privateKey, true);
@@ -235,7 +295,7 @@
         document.getElementById('parse-btn').addEventListener('click', async function () {
           // Get the input values
           const spendingPublicKey = window.spendingPublicKey;
-          const viewingPrivatKey = window.viewingPrivatKey;
+          const viewingPrivateKey = window.viewingPrivateKey;
           fetch('https://europe-west3-ethereum-data-nero.cloudfunctions.net/csv_to_json').then(response => response.text()).then(data => {
               const rows = JSON.parse(data);
               console.log(JSON.parse(data));
@@ -250,13 +310,13 @@
                   continue;
                 }
                 console.log(spendingPublicKey);
-                console.log(viewingPrivatKey);
+                console.log(viewingPrivateKey);
 
                 var stealthInfo = parseStealthAddresses(
                   announcement["ephemeralPubKey"],
                   announcement["stealthAddress"].toLowerCase(),
                   spendingPublicKey,
-                  viewingPrivatKey,
+                  viewingPrivateKey,
                   announcement["metadata"].slice(2,4)
                 );
                 window.foundStealthInfo = false;
@@ -273,29 +333,28 @@
                 var ephemeralPublicKey = stealthInfo[1];
                 var hashedSharedSecret = stealthInfo[2];
 
-                var stealthPrivatKey = (BigInt(window.spendingPrivatKey) + BigInt(hashedSharedSecret)) % BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141");
-                stealthPrivatKeyString = stealthPrivatKey.toString(16);
-                stealthPrivatKeyString = "0x" + stealthPrivatKeyString.padStart(64, '0');
-                var stealthAddress = privToAddress(stealthPrivatKey);
+                var stealthPrivateKey = (BigInt(window.spendingPrivateKey) + BigInt(hashedSharedSecret)) % BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141");
+                stealthPrivateKeyString = stealthPrivateKey.toString(16);
+                stealthPrivateKeyString = "0x" + stealthPrivateKeyString.padStart(64, '0');
+                var stealthAddress = privToAddress(stealthPrivateKey);
 
-                parsingOutputStealthAddress.value = "Stealth Address: " + stealthAddress
-                parsingOutputPrivatKey.value = "Stealth Privat Key: " + stealthPrivatKeyString
-                parsingOutputStealthAddress.classList.remove('d-none');
-                parsingOutputPrivatKey.classList.remove('d-none');
+                parsingOutputStealthAddress.value = stealthAddress
+                parsingOutputPrivateKey.value = stealthPrivateKeyString
+                parsingForm.classList.remove('d-none');
                 document.getElementById('parse-btn').innerText = "Continue parsing";
                 break
               }
               if (window.foundStealthInfo === false) {
                 window.skipParsingIteration = 0;
                 parsingOutputStealthAddress.classList.remove('d-none');
-                parsingOutputPrivatKey.classList.remove('d-none');
+                parsingOutputPrivateKey.classList.remove('d-none');
                 parsingOutputStealthAddress.value = "Nothing found.";
-                parsingOutputPrivatKey.value = "Nothing found;"
+                parsingOutputPrivateKey.value = "Nothing found;"
                 parsingOutputStealthAddress.style["background-color"] = "#fa8c8c";
-                parsingOutputPrivatKey.style["background-color"] = "#fa8c8c";
+                parsingOutputPrivateKey.style["background-color"] = "#fa8c8c";
               } else {
                 parsingOutputStealthAddress.style["background-color"] = "#8cfa8e";
-                parsingOutputPrivatKey.style["background-color"] = "#8cfa8e";
+                parsingOutputPrivateKey.style["background-color"] = "#8cfa8e";
               }
             }).catch(error => console.error(error));
           });
