@@ -19,21 +19,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
-            type="application/javascript"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="bundle.js" , type="text/javascript"></script>
-
     <style>
-    body {
+      body {
         background-color: #f5f5f5;
       }
+
       h1 {
         color: #333;
         font-size: 3rem;
         font-weight: 600;
         text-align: center;
       }
+
       .btn-primary {
         background-color: #007bff;
         border-color: #007bff;
@@ -41,12 +41,14 @@
         font-weight: 600;
         text-transform: uppercase;
       }
+
       .btn-primary:hover,
       .btn-primary:focus {
         background-color: #0062cc;
         border-color: #0062cc;
         color: #fff;
       }
+
       label {
         font-weight: 600;
       }
@@ -64,7 +66,6 @@
         word-wrap: break-word;
       }
     </style>
-
   </head>
   <body>
     <div class="container mt-5">
@@ -77,7 +78,6 @@
             <button id="connect-wallet-btn" class="btn btn-primary btn-block">Connect Wallet</button>
           </div>
           <div id="user-address" class="user-address d-none"></div>
-
           <div id="login">
             <div class="form-group">
               <label for="message-input">Sign the following message to login:</label>
@@ -90,120 +90,107 @@
         </div>
       </div>
       <div id="personalSign"></div>
-
-    <div id="user-stealth-meta-address" class="d-none">
+      <div id="user-stealth-meta-address" class="d-none">
         <div class="row">
           <div class="col-md-6 offset-md-3">
             <h4 class="text-center mt-3 mb-0">Your Stealth Meta-Address:</h4>
             <div id="stealth-meta-address" class="user-address"></div>
             <button class="btn btn-primary btn-block mb-3" id="copybuttonSMA">Copy to Clipboard</button>
-
           </div>
         </div>
         <div class="row mt-2">
           <div class="col-md-6 offset-md-3 d-flex justify-content-center">
-                <button id="tab1-btn" type="button" class="btn btn-primary w-50">Send</button>
-                <button id="tab2-btn" type="button" class="btn btn-secondary w-50">Receive</button>
-              </div>
-          </div>
-
-        <div class="row mt-2">
-          <div class="col-md-6 offset-md-3">
-
-           <!-- Tab content -->
-           <div id="tab1" class="tab-content">
-             <h2>Send to a stealth meta-address</h2>
-            <!-- Input fields -->
-            <div class="form-group">
-              <label for="input-string">Enter the stealth meta-address of the recipient:</label>
-              <input type="text" class="form-control" id="input-stealth-meta-address" placeholder="st:eth:0x...">
-            </div>
-            <div class="form-group">
-              <label for="input-amount">Enter amount in ETH:</label>
-              <input type="number" step="0.0001" class="form-control" id="input-amount" value="0.0001" placeholder="Enter amount in ETH" min="0">
-            </div>
-            <!-- Send button -->
-            <div class="form-group">
-              <button id="send-btn" class="btn btn-primary btn-block">Send</button>
-            </div>
-           </div>
-           <div id="tab2" class="tab-content" style="display: none;">
-             <h2> Receive to stealth address</h2>
-             <label for="input-string">Press button to start parsing for your stealth addresses:</label>
-             <button id="parse-btn" class="btn btn-primary btn-block">Parse</button>
-             <div id="parsing-form" class="form-group d-none">
-               <label for="input-string">Stealth Address:</label>
-               <textarea id="parsing-output-stealth-address" class="form-control" rows="2"></textarea>
-               <label for="input-string">Stealth Private Key:</label>
-               <textarea id="parsing-output-stealth-private-key" class="form-control" rows="3"></textarea>
-               <button id="copybuttonSPK">Copy to Clipboard</button>
-             </div>
-           </div>
-         </div>
-       </div>
-       </div>
-       <div class="row">
-          <div class="col-md-6 offset-md-3">
-            <footer class="footer mt-auto py-3 bg-light">
-              <div class="container text-center">
-                <span style="font-size: 1.1rem;" class="text-muted">Check out <a href="https://nerolation.github.io/stealth-utils/" target="_blank">this</a> tutorial to find more info about stealth addresses.</span>
-                <br>
-                <span style="font-size: 1.1rem;" class="text-muted">View <a href="https://github.com/nerolation/stealth-wallet" target="_blank">source code</a> on Github</span>
-                <br>
-                <span style="font-size: 1.15rem;" class="text-muted">&copy; <a href="https://twitter.com/nero_eth" target="_blank">Toni Wahrstätter</a> 2023</span>
-              </div>
-            </footer>
+            <button id="tab1-btn" type="button" class="btn btn-primary w-50">Send</button>
+            <button id="tab2-btn" type="button" class="btn btn-secondary w-50">Receive</button>
           </div>
         </div>
+        <div class="row mt-2">
+          <div class="col-md-6 offset-md-3">
+            <!-- Tab content -->
+            <div id="tab1" class="tab-content">
+              <h2>Send to a stealth meta-address</h2>
+              <!-- Input fields -->
+              <div class="form-group">
+                <label for="input-string">Enter the stealth meta-address of the recipient:</label>
+                <input type="text" class="form-control" id="input-stealth-meta-address" placeholder="st:eth:0x...">
+              </div>
+              <div class="form-group">
+                <label for="input-amount">Enter amount in ETH:</label>
+                <input type="number" step="0.0001" class="form-control" id="input-amount" value="0.0001" placeholder="Enter amount in ETH" min="0">
+              </div>
+              <!-- Send button -->
+              <div class="form-group">
+                <button id="send-btn" class="btn btn-primary btn-block">Send</button>
+              </div>
+            </div>
+            <div id="tab2" class="tab-content" style="display: none;">
+              <h2> Receive to stealth address</h2>
+              <label for="input-string">Press button to start parsing for your stealth addresses:</label>
+              <button id="parse-btn" class="btn btn-primary btn-block">Parse</button>
+              <div id="parsing-form" class="form-group d-none">
+                <label for="input-string">Stealth Address:</label>
+                <textarea id="parsing-output-stealth-address" class="form-control" rows="2"></textarea>
+                <label for="input-string">Stealth Private Key:</label>
+                <textarea id="parsing-output-stealth-private-key" class="form-control" rows="3"></textarea>
+                <button id="copybuttonSPK">Copy to Clipboard</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <footer class="footer mt-auto py-3 bg-light">
+            <div class="container text-center">
+              <span style="font-size: 1.1rem;" class="text-muted">Check out <a href="https://nerolation.github.io/stealth-utils/" target="_blank">this</a> tutorial to find more info about stealth addresses. </span>
+              <br>
+              <span style="font-size: 1.1rem;" class="text-muted">View <a href="https://github.com/nerolation/stealth-wallet" target="_blank">source code</a> on Github </span>
+              <br>
+              <span style="font-size: 1.15rem;" class="text-muted">&copy; <a href="https://twitter.com/nero_eth" target="_blank">Toni Wahrstätter</a> 2023 </span>
+            </div>
+          </footer>
+        </div>
+      </div>
     </div>
-
-
     <!-- Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Custom JS -->
     <script>
-
-
       function copyTextFromDiv(divID) {
-          const divText = document.getElementById(divID).innerText;
-          const textArea = document.createElement('textarea');
-          textArea.value = divText;
-          document.body.appendChild(textArea);
-          textArea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textArea);
+        const divText = document.getElementById(divID).innerText;
+        const textArea = document.createElement('textarea');
+        textArea.value = divText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
       }
 
       function copyTextFromTextField(textAreaID) {
-          const textArea = document.getElementById(textAreaID);
-          textArea.select();
-          document.execCommand('copy');
+        const textArea = document.getElementById(textAreaID);
+        textArea.select();
+        document.execCommand('copy');
       }
 
       function padToMin4Bytes(number) {
-          const targetLength = 8; // 32 bytes * 2 (each byte has 2 hex characters)
-
-          if (number.length >= targetLength) {
-            return number;
-          }
-
-          const zeroPadding = '0'.repeat(targetLength - number.length); // Calculate the required zero padding
-          return number + zeroPadding; // Append the zero padding to the end of the number
+        const targetLength = 8; // 32 bytes * 2 (each byte has 2 hex characters)
+        if (number.length >= targetLength) {
+          return number;
+        }
+        const zeroPadding = '0'.repeat(targetLength - number.length); // Calculate the required zero padding
+        return number + zeroPadding; // Append the zero padding to the end of the number
       }
-
       window.onload = function() {
         document.getElementById('copybuttonSPK').addEventListener('click', function() {
-            copyTextFromTextField('parsing-output-stealth-private-key');
-            document.getElementById('copybuttonSPK').innerText = "Copied";
+          copyTextFromTextField('parsing-output-stealth-private-key');
+          document.getElementById('copybuttonSPK').innerText = "Copied";
         });
-
         document.getElementById('copybuttonSMA').addEventListener('click', function() {
-            copyTextFromDiv('stealth-meta-address');
-            document.getElementById('copybuttonSMA').innerText = "Copied";
+          copyTextFromDiv('stealth-meta-address');
+          document.getElementById('copybuttonSMA').innerText = "Copied";
         });
-
         const web3 = new Web3(window.ethereum);
         const userAddressElement = document.getElementById('user-address');
         const interactionElements = document.getElementById('user-stealth-meta-address');
@@ -212,8 +199,7 @@
         const parsingForm = document.getElementById('parsing-form');
         const parsingOutputPrivateKey = document.getElementById('parsing-output-stealth-private-key');
         const loginPage = document.getElementById('login');
-
-        document.getElementById('tab1-btn').addEventListener('click', function () {
+        document.getElementById('tab1-btn').addEventListener('click', function() {
           document.getElementById('tab1').style.display = 'block';
           document.getElementById('tab2').style.display = 'none';
           document.getElementById('tab1-btn').classList.add('btn-primary');
@@ -221,8 +207,7 @@
           document.getElementById('tab2-btn').classList.add('btn-secondary');
           document.getElementById('tab2-btn').classList.remove('btn-primary');
         });
-
-        document.getElementById('tab2-btn').addEventListener('click', function () {
+        document.getElementById('tab2-btn').addEventListener('click', function() {
           document.getElementById('tab1').style.display = 'none';
           document.getElementById('tab2').style.display = 'block';
           document.getElementById('tab1-btn').classList.add('btn-secondary');
@@ -230,7 +215,6 @@
           document.getElementById('tab2-btn').classList.add('btn-primary');
           document.getElementById('tab2-btn').classList.remove('btn-secondary');
         });
-
         // Connect Wallet button
         document.getElementById('connect-wallet-btn').addEventListener('click', async function() {
           // Check if Metamask is installed
@@ -238,7 +222,9 @@
             console.log('Metamask is installed!');
             try {
               // Connect to Metamask and get accounts
-              const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+              const accounts = await ethereum.request({
+                method: 'eth_requestAccounts'
+              });
               const account = accounts[0];
               console.log('Connected to Metamask!');
               console.log('Current account:', account);
@@ -252,9 +238,11 @@
           }
         });
         // Sign Message button
-        document.getElementById('sign-message-btn').addEventListener('click', async function (event) {
+        document.getElementById('sign-message-btn').addEventListener('click', async function(event) {
           event.preventDefault();
-          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          const accounts = await ethereum.request({
+            method: 'eth_requestAccounts'
+          });
           const account = accounts[0];
           const exampleMessage = 'I want to login into my stealth wallet on Ethereum mainnet.';
           try {
@@ -269,141 +257,92 @@
             const sig2 = signature.slice(66, 130);
             console.log(sig1);
             console.log(sig2);
-
             // Hash "v" and "r" values using SHA-256
-           const hashedV = ethers.utils.sha256("0x"+sig1);
-           const hashedR = ethers.utils.sha256("0x"+sig2);
-
-           const n = ethers.BigNumber.from('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141');
-
-          // Calculate the private keys by taking the hash values modulo the curve order
-          const privateKey1 = ethers.BigNumber.from(hashedV).mod(n);
-          const privateKey2 = ethers.BigNumber.from(hashedR).mod(n);
-
-          // Generate the key pairs
-          const keyPair1 = new ethers.Wallet(privateKey1.toHexString());
-          const keyPair2 = new ethers.Wallet(privateKey2.toHexString());
-
-          window.spendingPrivateKey = keyPair1.privateKey;
-          window.viewingPrivateKey = keyPair2.privateKey;
-
-
-           const spendingPublicKey = ethers.utils.computePublicKey(keyPair1.privateKey, true);
-           const viewingPublicKey = ethers.utils.computePublicKey(keyPair2.privateKey, true);
-
-           window.spendingPublicKey = spendingPublicKey;
-           window.viewingPublicKey = viewingPublicKey;
-
-           userStealthMetaAddressElement.innerHTML = `st:eth:${spendingPublicKey}${viewingPublicKey.slice(2,)}`;
-           interactionElements.classList.remove('d-none');
-           loginPage.classList.add('d-none');
-
-
+            const hashedV = ethers.utils.sha256("0x" + sig1);
+            const hashedR = ethers.utils.sha256("0x" + sig2);
+            const n = ethers.BigNumber.from('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141');
+            // Calculate the private keys by taking the hash values modulo the curve order
+            const privateKey1 = ethers.BigNumber.from(hashedV).mod(n);
+            const privateKey2 = ethers.BigNumber.from(hashedR).mod(n);
+            // Generate the key pairs
+            const keyPair1 = new ethers.Wallet(privateKey1.toHexString());
+            const keyPair2 = new ethers.Wallet(privateKey2.toHexString());
+            window.spendingPrivateKey = keyPair1.privateKey;
+            window.viewingPrivateKey = keyPair2.privateKey;
+            const spendingPublicKey = ethers.utils.computePublicKey(keyPair1.privateKey, true);
+            const viewingPublicKey = ethers.utils.computePublicKey(keyPair2.privateKey, true);
+            window.spendingPublicKey = spendingPublicKey;
+            window.viewingPublicKey = viewingPublicKey;
+            userStealthMetaAddressElement.innerHTML = `st:eth:${spendingPublicKey}${viewingPublicKey.slice(2,)}`;
+            interactionElements.classList.remove('d-none');
+            loginPage.classList.add('d-none');
           } catch (err) {
             console.error(err);
             personalSign.innerHTML = `Error: ${err.message}`;
           }
         });
-
         window.skipParsingIteration = 0;
-        document.getElementById('parse-btn').addEventListener('click', async function () {
+        document.getElementById('parse-btn').addEventListener('click', async function() {
           // Get the input values
           const spendingPublicKey = window.spendingPublicKey;
           const viewingPrivateKey = window.viewingPrivateKey;
           fetch('https://europe-west3-ethereum-data-nero.cloudfunctions.net/csv_to_json').then(response => response.text()).then(data => {
-              const rows = JSON.parse(data);
-              console.log(JSON.parse(data));
-              for (let i = 1; i < rows.length; i++) {
-                const row = rows[i];
+            const rows = JSON.parse(data);
+            console.log(JSON.parse(data));
+            for (let i = 1; i < rows.length; i++) {
+              const row = rows[i];
+            }
+            window.announcements = rows;
+            var foundStealthAddresses = 0;
+            for (let i = 0; i < rows.length; i++) {
+              var announcement = window.announcements[i];
+              if (!announcement["ephemeralPubKey"]) {
+                continue;
               }
-              window.announcements = rows;
-              var foundStealthAddresses = 0;
-              for (let i = 0; i < rows.length; i++) {
-                var announcement = window.announcements[i];
-                if (!announcement["ephemeralPubKey"]) {
-                  continue;
-                }
-                console.log(spendingPublicKey);
-                console.log(viewingPrivateKey);
-
-                var stealthInfo = parseStealthAddresses(
-                  announcement["ephemeralPubKey"],
-                  announcement["stealthAddress"].toLowerCase(),
-                  spendingPublicKey,
-                  viewingPrivateKey,
-                  announcement["metadata"].slice(2,4)
-                );
-                window.foundStealthInfo = false;
-                if (stealthInfo === false) {
-                  continue;
-                }
-                foundStealthAddresses += 1;
-                if (foundStealthAddresses <= window.skipParsingIteration) {
-                  continue;
-                }
-                window.foundStealthInfo = true;
-                window.skipParsingIteration += 1;
-                var stealthAddress = stealthInfo[0];
-                var ephemeralPublicKey = stealthInfo[1];
-                var hashedSharedSecret = stealthInfo[2];
-
-                var stealthPrivateKey = (BigInt(window.spendingPrivateKey) + BigInt(hashedSharedSecret)) % BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141");
-                stealthPrivateKeyString = stealthPrivateKey.toString(16);
-                stealthPrivateKeyString = "0x" + stealthPrivateKeyString.padStart(64, '0');
-                var stealthAddress = privToAddress(stealthPrivateKey);
-
-                parsingOutputStealthAddress.value = stealthAddress
-                parsingOutputPrivateKey.value = stealthPrivateKeyString
-                parsingForm.classList.remove('d-none');
-                document.getElementById('parse-btn').innerText = "Continue parsing";
-                break
+              console.log(spendingPublicKey);
+              console.log(viewingPrivateKey);
+              var stealthInfo = parseStealthAddresses(announcement["ephemeralPubKey"], announcement["stealthAddress"].toLowerCase(), spendingPublicKey, viewingPrivateKey, announcement["metadata"].slice(2, 4));
+              window.foundStealthInfo = false;
+              if (stealthInfo === false) {
+                continue;
               }
-              if (window.foundStealthInfo === false) {
-                window.skipParsingIteration = 0;
-                parsingOutputStealthAddress.classList.remove('d-none');
-                parsingOutputPrivateKey.classList.remove('d-none');
-                parsingOutputStealthAddress.value = "Nothing found.";
-                parsingOutputPrivateKey.value = "Nothing found;"
-                parsingOutputStealthAddress.style["background-color"] = "#fa8c8c";
-                parsingOutputPrivateKey.style["background-color"] = "#fa8c8c";
-              } else {
-                parsingOutputStealthAddress.style["background-color"] = "#8cfa8e";
-                parsingOutputPrivateKey.style["background-color"] = "#8cfa8e";
+              foundStealthAddresses += 1;
+              if (foundStealthAddresses <= window.skipParsingIteration) {
+                continue;
               }
-            }).catch(error => console.error(error));
-          });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        document.getElementById('send-btn').addEventListener('click', async function () {
+              window.foundStealthInfo = true;
+              window.skipParsingIteration += 1;
+              var stealthAddress = stealthInfo[0];
+              var ephemeralPublicKey = stealthInfo[1];
+              var hashedSharedSecret = stealthInfo[2];
+              var stealthPrivateKey = (BigInt(window.spendingPrivateKey) + BigInt(hashedSharedSecret)) % BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141");
+              stealthPrivateKeyString = stealthPrivateKey.toString(16);
+              stealthPrivateKeyString = "0x" + stealthPrivateKeyString.padStart(64, '0');
+              var stealthAddress = privToAddress(stealthPrivateKey);
+              parsingOutputStealthAddress.value = stealthAddress
+              parsingOutputPrivateKey.value = stealthPrivateKeyString
+              parsingForm.classList.remove('d-none');
+              document.getElementById('parse-btn').innerText = "Continue parsing";
+              break
+            }
+            if (window.foundStealthInfo === false) {
+              window.skipParsingIteration = 0;
+              parsingOutputStealthAddress.classList.remove('d-none');
+              parsingOutputPrivateKey.classList.remove('d-none');
+              parsingOutputStealthAddress.value = "Nothing found.";
+              parsingOutputPrivateKey.value = "Nothing found;"
+              parsingOutputStealthAddress.style["background-color"] = "#fa8c8c";
+              parsingOutputPrivateKey.style["background-color"] = "#fa8c8c";
+            } else {
+              parsingOutputStealthAddress.style["background-color"] = "#8cfa8e";
+              parsingOutputPrivateKey.style["background-color"] = "#8cfa8e";
+            }
+          }).catch(error => console.error(error));
+        });
+        document.getElementById('send-btn').addEventListener('click', async function() {
           // Get the input values
           const inputStealthMetaAddress = document.getElementById('input-stealth-meta-address').value;
           const inputAmount = document.getElementById('input-amount').value;
-
           if (!(inputStealthMetaAddress.startsWith("st:eth:0x")) || (inputStealthMetaAddress.length != 141)) {
             console.log("Input a valid stealth meta-address starting with st:eth:0x;");
           } else {
@@ -414,75 +353,61 @@
               var ephk = stealthAddressInfo["ephemeralPublicKey"];
               var vt = stealthAddressInfo["ViewTag"];
               vt = padToMin4Bytes(vt);
-
             } catch (error) {
               console.log(error);
             }
           }
           // Convert the input amount from ETH to Wei
           const inputAmountWei = web3.utils.toWei(inputAmount, 'ether');
-
           // Get the current account
-          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          const accounts = await ethereum.request({
+            method: 'eth_requestAccounts'
+          });
           const fromAccount = accounts[0];
-
           // Prepare the transaction data
           const transferAndAnnounceData = contract.methods.transferAndAnnounce(sta, ephk, vt).encodeABI();
-
           // Create the transaction object
           const tx = {
             from: fromAccount,
             to: contractAddress,
             value: inputAmountWei,
             data: transferAndAnnounceData,
-            gas: 100000, // Set an appropriate gas limit (you may need to adjust this value)
+            gas: 100000
           };
-
           // Send the transaction
-          web3.eth.sendTransaction(tx)
-            .on('transactionHash', function (hash) {
-              console.log('Transaction hash:', hash);
-            })
-            .on('receipt', function (receipt) {
-              console.log('Transaction receipt:', receipt);
-            })
-            .on('confirmation', function (confirmationNumber, receipt) {
-              console.log('Transaction confirmation number:', confirmationNumber);
-              console.log('Transaction receipt:', receipt);
-            })
-            .on('error', function (error) {
-              console.error('Transaction error:', error);
-            });
+          web3.eth.sendTransaction(tx).on('transactionHash', function(hash) {
+            console.log('Transaction hash:', hash);
+          }).on('receipt', function(receipt) {
+            console.log('Transaction receipt:', receipt);
+          }).on('confirmation', function(confirmationNumber, receipt) {
+            console.log('Transaction confirmation number:', confirmationNumber);
+            console.log('Transaction receipt:', receipt);
+          }).on('error', function(error) {
+            console.error('Transaction error:', error);
+          });
         });
-
         const contractABI = {
-      		"inputs": [
-      			{
-      				"internalType": "address",
-      				"name": "recipient",
-      				"type": "address"
-      			},
-      			{
-      				"internalType": "bytes",
-      				"name": "ephemeralPubKey",
-      				"type": "bytes"
-      			},
-      			{
-      				"internalType": "bytes",
-      				"name": "metadata",
-      				"type": "bytes"
-      			}
-      		],
-      		"name": "transferAndAnnounce",
-      		"outputs": [],
-      		"stateMutability": "payable",
-      		"type": "function"
-      	}
+          "inputs": [{
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          }, {
+            "internalType": "bytes",
+            "name": "ephemeralPubKey",
+            "type": "bytes"
+          }, {
+            "internalType": "bytes",
+            "name": "metadata",
+            "type": "bytes"
+          }],
+          "name": "transferAndAnnounce",
+          "outputs": [],
+          "stateMutability": "payable",
+          "type": "function"
+        }
         console.log(contractABI);
         const contractAddress = "0xb193dE1071fc1AF3FF1DF4c6d5091284274519EF";
         const contract = new web3.eth.Contract([contractABI], contractAddress);
-
-
       };
     </script>
   </body>
