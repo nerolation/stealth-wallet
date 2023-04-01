@@ -18,7 +18,7 @@
     <meta name="author" content="Toni Wahrstätter">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="bundle.js" , type="text/javascript"></script>
@@ -58,7 +58,6 @@
         border: 2px solid #007bff;
         border-radius: 5px;
         color: #333;
-        font-size: 1.2rem;
         font-weight: 600;
         margin-top: 1rem;
         padding: 1rem;
@@ -75,16 +74,16 @@
           <h5 class="text-center">Connect your Metamask wallet</h5>
           <p class="text-center mb-4">⚠️ Sepolia test net only ⚠️</p>
           <div class="form-group">
-            <button id="connect-wallet-btn" class="btn btn-primary btn-block">Connect Wallet</button>
+            <button id="connect-wallet-btn" class="btn-primary w-100 btn btn-outline-primary">Connect Wallet</button>
           </div>
           <div id="user-address" class="user-address d-none"></div>
           <div id="login">
-            <div class="form-group">
+            <div class="form-group mt-4">
               <label for="message-input">Sign the following message to login:</label>
               <textarea id="message-input" class="form-control" rows="3">I want to login into my stealth wallet on Ethereum mainnet.</textarea>
             </div>
             <div class="form-group">
-              <button id="sign-message-btn" class="btn btn-primary btn-block">Sign Message</button>
+              <button id="sign-message-btn" class="btn-primary w-100 btn mb-4 btn-outline-primary">Sign Message</button>
             </div>
           </div>
         </div>
@@ -92,10 +91,10 @@
       <div id="personalSign"></div>
       <div id="user-stealth-meta-address" class="d-none">
         <div class="row">
-          <div class="col-md-6 offset-md-3">
+          <div class="col-md-6 offset-md-3 .text-center mb-4">
             <h4 class="text-center mt-3 mb-0">Your Stealth Meta-Address:</h4>
             <div id="stealth-meta-address" class="user-address"></div>
-            <button class="btn btn-primary btn-block mb-3" id="copybuttonSMA">Copy to Clipboard</button>
+            <button class="w-100 btn btn-outline-primary" id="copybuttonSMA">Copy to Clipboard</button>
           </div>
         </div>
         <div class="row mt-2">
@@ -104,13 +103,13 @@
             <button id="tab2-btn" type="button" class="btn btn-secondary w-50">Receive</button>
           </div>
         </div>
-        <div class="row mt-2">
+        <div class="row mt-4">
           <div class="col-md-6 offset-md-3">
             <!-- Tab content -->
             <div id="tab1" class="tab-content">
               <h2>Send to a stealth meta-address</h2>
               <!-- Input fields -->
-              <div class="form-group">
+              <div class="form-group mb-2">
                 <label for="input-string">Enter the stealth meta-address of the recipient:</label>
                 <input type="text" class="form-control" id="input-stealth-meta-address" placeholder="st:eth:0x...">
               </div>
@@ -120,19 +119,19 @@
               </div>
               <!-- Send button -->
               <div class="form-group">
-                <button id="send-btn" class="btn btn-primary btn-block">Send</button>
+                <button id="send-btn" class="btn-primary w-100 btn btn-outline-primary">Send</button>
               </div>
             </div>
             <div id="tab2" class="tab-content" style="display: none;">
               <h2> Receive to stealth address</h2>
               <label for="input-string">Press button to start parsing for your stealth addresses:</label>
-              <button id="parse-btn" class="btn btn-primary btn-block">Parse</button>
+              <button id="parse-btn" class="btn-primary w-100 btn btn-outline-primary">Parse</button>
               <div id="parsing-form" class="form-group d-none">
                 <label for="input-string">Stealth Address:</label>
-                <textarea id="parsing-output-stealth-address" class="form-control" rows="2"></textarea>
+                <textarea id="parsing-output-stealth-address" class="form-control mb-2" rows="2"></textarea>
                 <label for="input-string">Stealth Private Key:</label>
                 <textarea id="parsing-output-stealth-private-key" class="form-control" rows="3"></textarea>
-                <button class="btn btn-primary btn-block mb-3" id="copybuttonSPK">Copy to Clipboard</button>
+                <button class="w-100 btn btn-outline-primary" id="copybuttonSPK">Copy to Clipboard</button>
               </div>
             </div>
           </div>
@@ -152,10 +151,34 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="transactionModalLabel">Transaction Summary</h5>
+          </div>
+          <div class="modal-body">
+            <p id="modal-stealth-address">Stealth Address: </p>
+            <p id="modal-amount">Amount: </p>
+            <p id="modal-status">Status: Waiting for confirmation...</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
     <!-- Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+
     <!-- Custom JS -->
     <script>
       function copyTextFromDiv(divID) {
@@ -340,75 +363,102 @@
           }).catch(error => console.error(error));
         });
         document.getElementById('send-btn').addEventListener('click', async function() {
-          // Get the input values
-          const inputStealthMetaAddress = document.getElementById('input-stealth-meta-address').value;
-          const inputAmount = document.getElementById('input-amount').value;
-          if (!(inputStealthMetaAddress.startsWith("st:eth:0x")) || (inputStealthMetaAddress.length != 141)) {
-            console.log("Input a valid stealth meta-address starting with st:eth:0x;");
-          } else {
-            try {
-              var stealthAddressInfo = generateStealthInfo(inputStealthMetaAddress);
-              console.log(stealthAddressInfo);
-              var sta = stealthAddressInfo["stealthAddress"];
-              var ephk = stealthAddressInfo["ephemeralPublicKey"];
-              var vt = stealthAddressInfo["ViewTag"];
-              vt = padToMin4Bytes(vt);
-            } catch (error) {
-              console.log(error);
-            }
-          }
-          // Convert the input amount from ETH to Wei
-          const inputAmountWei = web3.utils.toWei(inputAmount, 'ether');
-          // Get the current account
-          const accounts = await ethereum.request({
-            method: 'eth_requestAccounts'
-          });
-          const fromAccount = accounts[0];
-          // Prepare the transaction data
-          const transferAndAnnounceData = contract.methods.transferAndAnnounce(sta, ephk, vt).encodeABI();
-          // Create the transaction object
-          const tx = {
-            from: fromAccount,
-            to: contractAddress,
-            value: inputAmountWei,
-            data: transferAndAnnounceData,
-            gas: 100000
-          };
-          // Send the transaction
-          web3.eth.sendTransaction(tx).on('transactionHash', function(hash) {
-            console.log('Transaction hash:', hash);
-          }).on('receipt', function(receipt) {
-            console.log('Transaction receipt:', receipt);
-          }).on('confirmation', function(confirmationNumber, receipt) {
-            console.log('Transaction confirmation number:', confirmationNumber);
-            console.log('Transaction receipt:', receipt);
-          }).on('error', function(error) {
-            console.error('Transaction error:', error);
-          });
-        });
-        const contractABI = {
-          "inputs": [{
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          }, {
-            "internalType": "bytes",
-            "name": "ephemeralPubKey",
-            "type": "bytes"
-          }, {
-            "internalType": "bytes",
-            "name": "metadata",
-            "type": "bytes"
-          }],
-          "name": "transferAndAnnounce",
-          "outputs": [],
-          "stateMutability": "payable",
-          "type": "function"
+
+
+
+        // Get the input values
+        const inputStealthMetaAddress = document.getElementById('input-stealth-meta-address').value.trim();
+        const inputAmount = document.getElementById('input-amount').value.trim();
+        // Input validation
+        const stealthMetaAddressPattern = /^st:eth:0x[a-fA-F0-9]{132}$/;
+        const amountPattern = /^\d+(\.\d{1,18})?$/;
+
+        if (!stealthMetaAddressPattern.test(inputStealthMetaAddress)) {
+           alert('Please enter a valid stealth meta-address. It should start with "st:eth:0x" and followed by 128 characters in the range of 0-9 and a-fA-F.');
+           return;
+         }
+
+        if (!amountPattern.test(inputAmount)) {
+           alert('Please enter a valid amount. It must be a positive number with up to 18 decimal places.');
+           return;
         }
-        console.log(contractABI);
-        const contractAddress = "0xb193dE1071fc1AF3FF1DF4c6d5091284274519EF";
-        const contract = new web3.eth.Contract([contractABI], contractAddress);
-      };
+        try {
+          var stealthAddressInfo = generateStealthInfo(inputStealthMetaAddress);
+          console.log(stealthAddressInfo);
+          var sta = stealthAddressInfo["stealthAddress"];
+          var ephk = stealthAddressInfo["ephemeralPublicKey"];
+          var vt = stealthAddressInfo["ViewTag"];
+          vt = padToMin4Bytes(vt);
+        } catch (error) {
+          console.log(error);
+        }
+        // Show the transaction summary in the modal
+        document.getElementById('modal-stealth-address').innerHTML = `Stealth Address: ${sta}`;
+        document.getElementById('modal-amount').innerHTML = `Amount: ${inputAmount} ETH`;
+        document.getElementById('modal-status').innerHTML = 'Status: Waiting for confirmation...';
+        const transactionModal = new bootstrap.Modal(document.getElementById('transactionModal'));
+        transactionModal.show();
+        // Convert the input amount from ETH to Wei
+        const inputAmountWei = web3.utils.toWei(inputAmount, 'ether');
+        // Get the current account
+        const accounts = await ethereum.request({
+          method: 'eth_requestAccounts'
+        });
+        const fromAccount = accounts[0];
+        // Prepare the transaction data
+        const transferAndAnnounceData = contract.methods.transferAndAnnounce(sta, ephk, vt).encodeABI();
+        // Create the transaction object
+        const tx = {
+          from: fromAccount,
+          to: contractAddress,
+          value: inputAmountWei,
+          data: transferAndAnnounceData,
+          gas: 100000
+        };
+        // Send the transaction and update the modal with the transaction hash
+       web3.eth.sendTransaction(tx)
+         .on('transactionHash', function(hash) {
+           console.log('Transaction hash:', hash);
+          })
+         .on('receipt', function(receipt) {
+           console.log('Transaction receipt:', receipt);
+         })
+         .on('confirmation', function(confirmationNumber, receipt) {
+           console.log('Transaction confirmation number:', confirmationNumber);
+           console.log('Transaction receipt:', receipt);
+           // Update the modal status with the transaction hash
+           const shortHash = receipt.transactionHash.slice(0, 10) + '...';
+            document.getElementById('modal-status').innerHTML = `Status: Confirmed<br>Transaction Hash: <a href="https://sepolia.etherscan.io/tx/${receipt.transactionHash}" target="_blank">${shortHash}</a>`;
+           })
+         .on('error', function(error) {
+           console.error('Transaction error:', error);
+           // Update the modal status with the error message
+           document.getElementById('modal-status').innerHTML = `Status: Error<br>${error.message}`;
+         });
+      });
+      const contractABI = {
+        "inputs": [{
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        }, {
+          "internalType": "bytes",
+          "name": "ephemeralPubKey",
+          "type": "bytes"
+        }, {
+          "internalType": "bytes",
+          "name": "metadata",
+          "type": "bytes"
+        }],
+        "name": "transferAndAnnounce",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      }
+      console.log(contractABI);
+      const contractAddress = "0xb193dE1071fc1AF3FF1DF4c6d5091284274519EF";
+      const contract = new web3.eth.Contract([contractABI], contractAddress);
+    };
     </script>
   </body>
 </html>
