@@ -113,7 +113,7 @@
                 <label for="input-string">Enter the stealth meta-address of the recipient:</label>
                 <input type="text" class="form-control" id="input-stealth-meta-address" placeholder="st:eth:0x...">
               </div>
-              <div class="form-group">
+              <div class="form-group mb-1">
                   <label for="input-amount">Enter amount in ETH:</label>
                   <div class="input-group">
                   <div class="input-group-prepend">
@@ -130,19 +130,24 @@
             <div id="tab2" class="tab-content" style="display: none;">
               <h2> Receive to stealth address</h2>
               <label for="input-string">Press button to start parsing for your stealth addresses:</label>
-              <button id="parse-btn" class="btn-primary w-100 btn btn-outline-primary">Parse</button>
+              <button id="parse-btn" class="btn-primary w-100 btn btn-outline-primary mb-3">Parse</button>
               <div id="parsing-form" class="form-group d-none">
                 <label for="input-string">Stealth Address:</label>
-                <textarea id="parsing-output-stealth-address" class="form-control mb-2" rows="2"></textarea>
+                <div class="input-group mb-2">
+                  <input id="parsing-output-stealth-address" class="form-control" type="text" placeholder="0x..." readonly>
+                  <div class="input-group-append">
+                   <button class="btn btn-light" id="basic-addon2">View in Explorer</button>
+                 </div>
+                </div>
                 <label for="input-string">Stealth Private Key:</label>
-                <textarea id="parsing-output-stealth-private-key" class="form-control" rows="3"></textarea>
+                <input id="parsing-output-stealth-private-key" class="form-control mb-1" type="text" placeholder="0x..." readonly>
                 <button class="w-100 btn btn-outline-primary" id="copybuttonSPK">Copy to Clipboard</button>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row mt-4">
         <div class="col-md-6 offset-md-3">
           <footer class="footer mt-auto py-3 bg-light">
             <div class="container text-center">
@@ -219,6 +224,12 @@
       }
       window.onload = function() {
 
+
+        document.getElementById('basic-addon2').addEventListener('click', function() {
+          const parsingOutputStealthAddress = document.getElementById('parsing-output-stealth-address').value;
+          var url = "https://sepolia.etherscan.io/address/" + parsingOutputStealthAddress;
+          window.open(url, '_blank').focus();
+        });
 
         document.getElementById('copybuttonSPK').addEventListener('click', function() {
           copyTextFromTextField('parsing-output-stealth-private-key');
