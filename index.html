@@ -280,11 +280,14 @@
               console.log('Current account:', account);
               userAddressElement.innerHTML = `Connected as: ${accounts[0]}`;
               userAddressElement.classList.remove('d-none');
+              loginPage.classList.remove('d-none');
+              interactionElements.classList.add('d-none');
             } catch (error) {
               console.log('Metamask connection error:', error);
             }
           } else {
             console.log('Metamask is not installed!');
+            window.alert('Metamask is not installed!');
           }
         });
         // Sign Message button
