@@ -59,6 +59,25 @@ label {
 	transform: translateY(-100%);
 }
 
+.welcome-screen-header {
+    font-size: 10vw;
+}
+@media screen and (min-width: 500px) {
+  .welcome-screen-header {
+     font-size: 7vw;
+  }
+}
+@media screen and (min-width: 700px) {
+  .welcome-screen-header {
+     font-size: 5vw;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .welcome-screen-header {
+     font-size: 3vw;
+  }
+}
+
 .main-interface {
 	width: 100%;
 	height: 100%;
