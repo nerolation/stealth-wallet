@@ -1,6 +1,5 @@
 /**
  * Copy text from a div element to the clipboard.
- * @param {string} divID - The ID of the div element to copy text from.
  */
 function copyTextFromDiv(divID) {
     // Get the text from the div element.
@@ -21,7 +20,6 @@ function copyTextFromDiv(divID) {
 
 /**
  * Copy text from a textarea or input element to the clipboard.
- * @param {string} textAreaID - The ID of the textarea or input element to copy text from.
  */
 function copyTextFromTextField(textAreaID) {
     // Get the textarea or input element and select its content.
@@ -34,8 +32,6 @@ function copyTextFromTextField(textAreaID) {
 
 /**
  * Pad a number string with zeros to reach a minimum of 4 bytes (8 characters).
- * @param {string} number - The number string to pad.
- * @returns {string} - The padded number string.
  */
 function padToMin4Bytes(number) {
     // Define the target length for the padded number string.
@@ -211,8 +207,8 @@ window.onload = function() {
                 stealthPrivateKeyString = stealthPrivateKey.toString(16);
                 stealthPrivateKeyString = "0x" + stealthPrivateKeyString.padStart(64, '0');
                 var stealthAddress = privToAddress(stealthPrivateKey);
-                parsingOutputStealthAddress.value = stealthAddress
-                parsingOutputPrivateKey.value = stealthPrivateKeyString
+                parsingOutputStealthAddress.value = stealthAddress;
+                parsingOutputPrivateKey.value = stealthPrivateKeyString;
                 parsingForm.classList.remove('d-none');
                 document.getElementById('parse-btn').innerText = "Continue parsing";
                 break
@@ -222,12 +218,16 @@ window.onload = function() {
                 parsingOutputStealthAddress.classList.remove('d-none');
                 parsingOutputPrivateKey.classList.remove('d-none');
                 parsingOutputStealthAddress.classList.add('is-invalid');
-                parsingOutputPrivateKey.classList.add('is-invalid')
+                parsingOutputPrivateKey.classList.add('is-invalid');
+                parsingOutputPrivateKey.classList.remove('is-valid');
+                parsingOutputPrivateKey.classList.remove('is-valid');
                 parsingOutputStealthAddress.value = "Nothing found.";
-                parsingOutputPrivateKey.value = "Nothing found;"
+                parsingOutputPrivateKey.value = "Nothing found;";
             } else {
                 parsingOutputStealthAddress.classList.add('is-valid');
                 parsingOutputPrivateKey.classList.add('is-valid');
+                parsingOutputPrivateKey.classList.remove('is-invalid');
+                parsingOutputPrivateKey.classList.remove('is-invalid');
             }
         }).catch(error => console.error(error));
     });
