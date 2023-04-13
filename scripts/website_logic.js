@@ -260,7 +260,7 @@ window.onload = function() {
         document.getElementById('modal-stealth-address').innerHTML = `Stealth Address: ${sta}`;
         document.getElementById('modal-amount').innerHTML = `Amount <span class="icon-ok-sign" data-bs-toggle="tooltip"
         data-bs-placement="top" title="Note that 0.001 ETH from the amount are directly deposited into the Messenger contract if you have not already done so. The deposit represents an anti-DoS measure and can be withdrawn at any time. Furthermore, it is unslashable. Staking provides your recipients with prioritized treatment in the parsing process.">
-          <img class="bi bi-info-circle-fill" src="info-circle-fill.svg"></img>
+          <img class="bi bi-info-circle-fill" src="static/img/info-circle-fill.svg"></img>
         </span>: ${inputAmount} ETH`;
         document.getElementById('modal-status').innerHTML = 'Status: Waiting for confirmation...';
         const transactionModal = new bootstrap.Modal(document.getElementById('transactionModal'));
