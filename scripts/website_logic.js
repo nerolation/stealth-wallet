@@ -1,36 +1,73 @@
+/**
+ * Copy text from a div element to the clipboard.
+ * @param {string} divID - The ID of the div element to copy text from.
+ */
 function copyTextFromDiv(divID) {
+    // Get the text from the div element.
     const divText = document.getElementById(divID).innerText;
+
+    // Create a new textarea element and set its value to the div text.
     const textArea = document.createElement('textarea');
     textArea.value = divText;
+
+    // Add the textarea to the document, select its content, and copy it to the clipboard.
     document.body.appendChild(textArea);
     textArea.select();
     document.execCommand('copy');
+
+    // Remove the textarea from the document.
     document.body.removeChild(textArea);
 }
 
+/**
+ * Copy text from a textarea or input element to the clipboard.
+ * @param {string} textAreaID - The ID of the textarea or input element to copy text from.
+ */
 function copyTextFromTextField(textAreaID) {
+    // Get the textarea or input element and select its content.
     const textArea = document.getElementById(textAreaID);
     textArea.select();
+
+    // Copy the selected content to the clipboard.
     document.execCommand('copy');
 }
 
+/**
+ * Pad a number string with zeros to reach a minimum of 4 bytes (8 characters).
+ * @param {string} number - The number string to pad.
+ * @returns {string} - The padded number string.
+ */
 function padToMin4Bytes(number) {
-    const targetLength = 8; // 32 bytes * 2 (each byte has 2 hex characters)
+    // Define the target length for the padded number string.
+    const targetLength = 8; // 4 bytes * 2 (each byte has 2 hex characters)
+
+    // If the number string is already at least the target length, return it unchanged.
     if (number.length >= targetLength) {
         return number;
     }
-    const zeroPadding = '0'.repeat(targetLength - number.length); // Calculate the required zero padding
-    return number + zeroPadding; // Append the zero padding to the end of the number
+
+    // Calculate the required zero padding.
+    const zeroPadding = '0'.repeat(targetLength - number.length);
+
+    // Append the zero padding to the end of the number string and return it.
+    return number + zeroPadding;
 }
 
 
 
 window.onload = function() {
+    const web3 = new Web3(window.ethereum);
+    const userAddressElement = document.getElementById('user-address');
+    const interactionElements = document.getElementById('user-stealth-meta-address');
+    const userStealthMetaAddressElement = document.getElementById('stealth-meta-address');
+    const parsingOutputStealthAddress = document.getElementById('parsing-output-stealth-address');
+    const parsingForm = document.getElementById('parsing-form');
+    const parsingOutputPrivateKey = document.getElementById('parsing-output-stealth-private-key');
+    const loginPage = document.getElementById('login');
 
     document.getElementById('enter-button').addEventListener('click', () => {
         const welcomeScreen = document.getElementById('welcome-screen');
         const mainInterface = document.getElementById('main-interface');
-
         welcomeScreen.classList.add('hide');
         mainInterface.classList.add('move-up');
     });
@@ -45,18 +82,12 @@ window.onload = function() {
         copyTextFromTextField('parsing-output-stealth-private-key');
         document.getElementById('copybuttonSPK').innerText = "Copied";
     });
+
     document.getElementById('copybuttonSMA').addEventListener('click', function() {
         copyTextFromDiv('stealth-meta-address');
         document.getElementById('copybuttonSMA').innerText = "Copied";
     });
-    const web3 = new Web3(window.ethereum);
-    const userAddressElement = document.getElementById('user-address');
-    const interactionElements = document.getElementById('user-stealth-meta-address');
-    const userStealthMetaAddressElement = document.getElementById('stealth-meta-address');
-    const parsingOutputStealthAddress = document.getElementById('parsing-output-stealth-address');
-    const parsingForm = document.getElementById('parsing-form');
-    const parsingOutputPrivateKey = document.getElementById('parsing-output-stealth-private-key');
-    const loginPage = document.getElementById('login');
+
     document.getElementById('tab1-btn').addEventListener('click', function() {
         document.getElementById('tab1').style.display = 'block';
         document.getElementById('tab2').style.display = 'none';
@@ -190,32 +221,27 @@ window.onload = function() {
                 window.skipParsingIteration = 0;
                 parsingOutputStealthAddress.classList.remove('d-none');
                 parsingOutputPrivateKey.classList.remove('d-none');
+                parsingOutputStealthAddress.classList.add('is-invalid');
+                parsingOutputPrivateKey.classList.add('is-invalid')
                 parsingOutputStealthAddress.value = "Nothing found.";
                 parsingOutputPrivateKey.value = "Nothing found;"
-                parsingOutputStealthAddress.style["background-color"] = "#fa8c8c";
-                parsingOutputPrivateKey.style["background-color"] = "#fa8c8c";
             } else {
-                parsingOutputStealthAddress.style["background-color"] = "#8cfa8e";
-                parsingOutputPrivateKey.style["background-color"] = "#8cfa8e";
+                parsingOutputStealthAddress.classList.add('is-valid');
+                parsingOutputPrivateKey.classList.add('is-valid');
             }
         }).catch(error => console.error(error));
     });
     document.getElementById('send-btn').addEventListener('click', async function() {
-
-
-
         // Get the input values
         const inputStealthMetaAddress = document.getElementById('input-stealth-meta-address').value.trim();
         const inputAmount = document.getElementById('input-amount').value.trim();
         // Input validation
         const stealthMetaAddressPattern = /^st:eth:0x[a-fA-F0-9]{132}$/;
         const amountPattern = /^\d+(\.\d{1,18})?$/;
-
         if (!stealthMetaAddressPattern.test(inputStealthMetaAddress)) {
             alert('Please enter a valid stealth meta-address. It should start with "st:eth:0x" and followed by 128 characters in the range of 0-9 and a-fA-F.');
             return;
         }
-
         if (!amountPattern.test(inputAmount)) {
             alert('Please enter a valid amount. It must be a positive number with up to 18 decimal places.');
             return;
@@ -299,13 +325,10 @@ window.onload = function() {
     console.log(contractABI);
     const contractAddress = "0x054Aa0E0b4C92142a583fDfa9369FF3558F8dea4";
     const contract = new web3.eth.Contract([contractABI], contractAddress);
-
-
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-
 
     function validateStealthMetaAddress(stealthMetaAddress) {
         // Replace this with your specific validation logic
