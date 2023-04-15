@@ -189,7 +189,13 @@ window.onload = function() {
                 }
                 console.log(spendingPublicKey);
                 console.log(viewingPrivateKey);
-                var stealthInfo = parseStealthAddresses(announcement["ephemeralPubKey"], announcement["stealthAddress"].toLowerCase(), spendingPublicKey, viewingPrivateKey, announcement["metadata"].slice(2, 4));
+                try {
+                  var stealthInfo = parseStealthAddresses(announcement["ephemeralPubKey"], announcement["stealthAddress"].toLowerCase(), spendingPublicKey, viewingPrivateKey, announcement["metadata"].slice(2, 4));
+                } catch (err) {
+                  console.error(err);
+                  console.error("Failed parsing announcement:");
+                  console.error(announcement);
+                }
                 window.foundStealthInfo = false;
                 if (stealthInfo === false) {
                     continue;
@@ -220,14 +226,14 @@ window.onload = function() {
                 parsingOutputStealthAddress.classList.add('is-invalid');
                 parsingOutputPrivateKey.classList.add('is-invalid');
                 parsingOutputPrivateKey.classList.remove('is-valid');
-                parsingOutputPrivateKey.classList.remove('is-valid');
+                parsingOutputStealthAddress.classList.remove('is-valid');
                 parsingOutputStealthAddress.value = "Nothing found.";
                 parsingOutputPrivateKey.value = "Nothing found;";
             } else {
                 parsingOutputStealthAddress.classList.add('is-valid');
                 parsingOutputPrivateKey.classList.add('is-valid');
                 parsingOutputPrivateKey.classList.remove('is-invalid');
-                parsingOutputPrivateKey.classList.remove('is-invalid');
+                parsingOutputStealthAddress.classList.remove('is-invalid');
             }
         }).catch(error => console.error(error));
     });
@@ -322,7 +328,6 @@ window.onload = function() {
         "stateMutability": "payable",
         "type": "function"
     }
-    console.log(contractABI);
     const contractAddress = "0x054Aa0E0b4C92142a583fDfa9369FF3558F8dea4";
     const contract = new web3.eth.Contract([contractABI], contractAddress);
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
