@@ -1,5 +1,7 @@
 const keccak256 = require('js-sha3').keccak256;
 const secp = require("@noble/secp256k1");
+const ethers = require('ethers');
+var CryptoJS = require("crypto-js");
 
 function randomPrivateKey() {
   var randPrivateKey = secp.utils.randomPrivateKey();
@@ -10,9 +12,33 @@ function uintArrayToHex(uintArray) {
   return secp.utils.bytesToHex(uintArray);
 }
 
-function toEthAddress(PublicKey) {
+global.toEthAddress = function toEthAddress(PublicKey) {
   var stAA = keccak256( Buffer.from(PublicKey, 'hex').slice(1)).toString(16);
   return "0x"+stAA.slice(-40);
+}
+
+global.encrypt_raw_tx = function encrypt_raw_tx(rawTx, key) {
+  console.log("-------------\nEncrypting finalization tx...");
+  const ciphertext = CryptoJS.AES.encrypt(rawTx, key);
+  console.log(`Tx encrypted:\n${ciphertext.toString()}`);
+  const ciphertextArray = CryptoJS.enc.Base64.parse(ciphertext.toString());
+  console.log(`Tx encrypted:\n${CryptoJS.enc.Hex.stringify(ciphertextArray)}`);
+  //console.log(`Tx encrypted:\n${CryptoJS.enc.Hex.stringify(ciphertextArray)}`);
+  return CryptoJS.enc.Hex.stringify(ciphertextArray);
+}
+
+global.decrypt_tx = function decrypt_tx(cipher, key) {
+  console.log("-------------\nDecrypting finalization tx...");
+  ciphertext = hexToBase64(cipher);
+  const decrypted = CryptoJS.AES.decrypt(ciphertext, key);
+  const rawTx = decrypted.toString(CryptoJS.enc.Utf8);
+  console.log(`Tx decrypted:\n${rawTx}`);
+  return rawTx;
+}
+
+function hexToBase64(hexString) {
+  console.log(Buffer.from(hexString, 'hex').toString('base64'));
+  return Buffer.from(hexString, 'hex').toString('base64');
 }
 
 global.generateStealthInfo = function generateStealthInfo(stealthMetaAddress) {
@@ -51,7 +77,7 @@ global.generateStealthInfo = function generateStealthInfo(stealthMetaAddress) {
   //console.log("stealthPublicKey.toHex(): ", stealthPublicKey.toHex());
   const stealthAddress = toEthAddress(stealthPublicKey.toHex());
   //console.log('stealth address:', stealthAddress);
-  return {"stealthAddress":stealthAddress, "ephemeralPublicKey":"0x"+Buffer.from(ephemeralPublicKey).toString('hex'), "ViewTag":"0x"+ViewTag.toString('hex')};
+  return {"stealthAddress":stealthAddress, "ephemeralPublicKey":"0x"+Buffer.from(ephemeralPublicKey).toString('hex'), "ViewTag":"0x"+ViewTag.toString('hex'), "HashedSecret":hashedSharedSecret};
 }
 ////console.log("generateStealthInfo......................");
 //var info = generateStealthInfo("st:eth:0x02b69f343a19fa77a07ba1d106f54c35d5f4394dafd2cbc03a52b1f7b51ffd7c15024f41330ec0e0ba6aab92e3b247057405560035b9afce2c65de16040ace97d43a");
@@ -134,3 +160,17 @@ global.generateRandomStealthMetaAddress = function generateRandomStealthMetaAddr
 
 //stealthAddress_derived = privToAddress(stealthPrivateKey);
 ////console.log("stealthAddress_derived: ", stealthAddress_derived);
+
+
+global.stringAndBytesToKeccakHash = function stringAndBytesToKeccakHash(stealthAddress, random) {
+
+  // Convert stealthAddress to a proper address format
+  const formattedStealthAddress = ethers.utils.getAddress(stealthAddress);
+
+  const hash = ethers.utils.keccak256(
+    ethers.utils.defaultAbiCoder.encode(['address', 'uint256'], [formattedStealthAddress, random])
+  );
+
+  // Calculate and return the keccak256 hash of the concatenated bytes
+  return hash;
+}

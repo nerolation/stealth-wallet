@@ -30,12 +30,47 @@ function copyTextFromTextField(textAreaID) {
     document.execCommand('copy');
 }
 
+function checkHash(hash) {
+    // Retrieve the stored hashes from localStorage
+    let storedHashes = localStorage.getItem('hashes');
+
+    // If no hashes have been stored yet, return false
+    if (!storedHashes) {
+        return false;
+    } else {
+        // If hashes have been stored, parse the JSON string into an array
+        storedHashes = JSON.parse(storedHashes);
+    }
+
+    // Check if the given hash is already in the storedHashes array
+    return storedHashes.includes(hash);
+}
+
+function storeHash(hash) {
+    // Retrieve the stored hashes from localStorage
+    let storedHashes = localStorage.getItem('hashes');
+
+    // If no hashes have been stored yet, create an empty array
+    if (!storedHashes) {
+        storedHashes = [];
+    } else {
+        // If hashes have been stored, parse the JSON string into an array
+        storedHashes = JSON.parse(storedHashes);
+    }
+
+    // Add the new hash to the storedHashes array
+    storedHashes.push(hash);
+
+    // Update the localStorage with the new array, converting it back to a JSON string
+    localStorage.setItem('hashes', JSON.stringify(storedHashes));
+}
+
 /**
  * Pad a number string with zeros to reach a minimum of 4 bytes (8 characters).
  */
-function padToMin4Bytes(number) {
+function padToOneByte(number) {
     // Define the target length for the padded number string.
-    const targetLength = 8; // 4 bytes * 2 (each byte has 2 hex characters)
+    const targetLength = 2; // 4 bytes * 2 (each byte has 2 hex characters)
 
     // If the number string is already at least the target length, return it unchanged.
     if (number.length >= targetLength) {
@@ -177,9 +212,6 @@ window.onload = function() {
         fetch('https://europe-west3-ethereum-data-nero.cloudfunctions.net/csv_to_json').then(response => response.text()).then(data => {
             const rows = JSON.parse(data);
             console.log(JSON.parse(data));
-            for (let i = 1; i < rows.length; i++) {
-                const row = rows[i];
-            }
             window.announcements = rows;
             var foundStealthAddresses = 0;
             for (let i = 0; i < rows.length; i++) {
@@ -190,11 +222,11 @@ window.onload = function() {
                 console.log(spendingPublicKey);
                 console.log(viewingPrivateKey);
                 try {
-                  var stealthInfo = parseStealthAddresses(announcement["ephemeralPubKey"], announcement["stealthAddress"].toLowerCase(), spendingPublicKey, viewingPrivateKey, announcement["metadata"].slice(2, 4));
+                    var stealthInfo = parseStealthAddresses(announcement["ephemeralPubKey"], announcement["stealthAddress"].toLowerCase(), spendingPublicKey, viewingPrivateKey, announcement["metadata"].slice(2, 4));
                 } catch (err) {
-                  console.error(err);
-                  console.error("Failed parsing announcement:");
-                  console.error(announcement);
+                    console.error(err);
+                    console.error("Failed parsing announcement:");
+                    console.error(announcement);
                 }
                 window.foundStealthInfo = false;
                 if (stealthInfo === false) {
@@ -209,6 +241,7 @@ window.onload = function() {
                 var stealthAddress = stealthInfo[0];
                 var ephemeralPublicKey = stealthInfo[1];
                 var hashedSharedSecret = stealthInfo[2];
+                console.log("hashedSharedSecret", hashedSharedSecret);
                 var stealthPrivateKey = (BigInt(window.spendingPrivateKey) + BigInt(hashedSharedSecret)) % BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141");
                 stealthPrivateKeyString = stealthPrivateKey.toString(16);
                 stealthPrivateKeyString = "0x" + stealthPrivateKeyString.padStart(64, '0');
@@ -217,6 +250,15 @@ window.onload = function() {
                 parsingOutputPrivateKey.value = stealthPrivateKeyString;
                 parsingForm.classList.remove('d-none');
                 document.getElementById('parse-btn').innerText = "Continue parsing";
+                if (announcement["schemeID"] == 2) {
+                    if (!checkHash(ephemeralPublicKey)) {
+                        window.ephemeralPublicKey = ephemeralPublicKey;
+                        manage_decrypt_transaction(announcement["metadata"].slice(4, ), hashedSharedSecret.slice(2, ), stealthAddress);
+                    } else {
+                        continue;
+                    }
+
+                }
                 break
             }
             if (window.foundStealthInfo === false) {
@@ -241,6 +283,7 @@ window.onload = function() {
         // Get the input values
         const inputStealthMetaAddress = document.getElementById('input-stealth-meta-address').value.trim();
         const inputAmount = document.getElementById('input-amount').value.trim();
+        const toggleStatus = document.getElementById('flexSwitchCheckDefault').checked;
         // Input validation
         const stealthMetaAddressPattern = /^st:eth:0x[a-fA-F0-9]{132}$/;
         const amountPattern = /^\d+(\.\d{1,18})?$/;
@@ -258,7 +301,8 @@ window.onload = function() {
             var sta = stealthAddressInfo["stealthAddress"];
             var ephk = stealthAddressInfo["ephemeralPublicKey"];
             var vt = stealthAddressInfo["ViewTag"];
-            vt = padToMin4Bytes(vt);
+            var hs = stealthAddressInfo["HashedSecret"];
+            vt = padToOneByte(vt);
         } catch (error) {
             console.log(error);
         }
@@ -279,57 +323,188 @@ window.onload = function() {
         });
         const fromAccount = accounts[0];
         // Prepare the transaction data
-        const transferAndAnnounceData = contract.methods.transferAndStakeAndAnnounce(sta, ephk, vt).encodeABI();
-        // Create the transaction object
-        const tx = {
-            from: fromAccount,
-            to: contractAddress,
-            value: inputAmountWei,
-            data: transferAndAnnounceData,
-            gas: 150000
-        };
-        // Send the transaction and update the modal with the transaction hash
-        web3.eth.sendTransaction(tx)
-            .on('transactionHash', function(hash) {
-                console.log('Transaction hash:', hash);
-            })
-            .on('receipt', function(receipt) {
-                console.log('Transaction receipt:', receipt);
-            })
-            .on('confirmation', function(confirmationNumber, receipt) {
-                console.log('Transaction confirmation number:', confirmationNumber);
-                console.log('Transaction receipt:', receipt);
-                // Update the modal status with the transaction hash
-                const shortHash = receipt.transactionHash.slice(0, 14) + '...';
-                document.getElementById('modal-status').innerHTML = `Status: Confirmed<br>Transaction Hash: <a href="https://sepolia.etherscan.io/tx/${receipt.transactionHash}" target="_blank">${shortHash}</a>`;
-            })
-            .on('error', function(error) {
-                console.error('Transaction error:', error);
-                // Update the modal status with the error message
-                document.getElementById('modal-status').innerHTML = `Status: Error<br>${error.message}`;
-            });
+        if (toggleStatus === true) {
+            escrowTransaction(fromAccount, inputAmountWei, sta, ephk, vt, hs);
+        } else {
+            const transferAndAnnounceData = helperContract.methods.transferAndStakeAndAnnounce(sta, ephk, vt).encodeABI();
+            // Create the transaction object
+            const tx = {
+                from: fromAccount,
+                to: contractAddress,
+                value: inputAmountWei,
+                data: transferAndAnnounceData,
+                gas: 150000
+            };
+            // Send the transaction and update the modal with the transaction hash
+            web3.eth.sendTransaction(tx)
+                .on('transactionHash', function(hash) {
+                    console.log('Transaction hash:', hash);
+                })
+                .on('receipt', function(receipt) {
+                    console.log('Transaction receipt:', receipt);
+                })
+                .on('confirmation', function(confirmationNumber, receipt) {
+                    console.log('Transaction confirmation number:', confirmationNumber);
+                    console.log('Transaction receipt:', receipt);
+                    // Update the modal status with the transaction hash
+                    const shortHash = receipt.transactionHash.slice(0, 14) + '...';
+                    document.getElementById('modal-status').innerHTML = `Status: Confirmed<br>Transaction Hash: <a href="https://sepolia.etherscan.io/tx/${receipt.transactionHash}" target="_blank">${shortHash}</a>`;
+                })
+                .on('error', function(error) {
+                    console.error('Transaction error:', error);
+                    // Update the modal status with the error message
+                    document.getElementById('modal-status').innerHTML = `Status: Error<br>${error.message}`;
+                });
+        }
     });
-    const contractABI = {
-        "inputs": [{
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-        }, {
-            "internalType": "bytes",
-            "name": "ephemeralPubKey",
-            "type": "bytes"
-        }, {
-            "internalType": "bytes",
-            "name": "metadata",
-            "type": "bytes"
-        }],
-        "name": "transferAndStakeAndAnnounce",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    }
-    const contractAddress = "0x054Aa0E0b4C92142a583fDfa9369FF3558F8dea4";
-    const contract = new web3.eth.Contract([contractABI], contractAddress);
+    const contractABI = [{
+            "inputs": [{
+                    "internalType": "address",
+                    "name": "stealthAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bytes32",
+                    "name": "r",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "bytes32",
+                    "name": "s",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "uint8",
+                    "name": "v",
+                    "type": "uint8"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "random",
+                    "type": "uint256"
+                }
+            ],
+            "name": "finalizeEscrowPosition",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [{
+                    "internalType": "address",
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "ephemeralPubKey",
+                    "type": "bytes"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "metadata",
+                    "type": "bytes"
+                },
+                {
+                    "internalType": "address",
+                    "name": "requiredSigner",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "spendingAccount",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "finalGas",
+                    "type": "uint256"
+                }
+            ],
+            "name": "secureTransferAndStakeAndAnnounce",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [{
+                    "internalType": "address",
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "ephemeralPubKey",
+                    "type": "bytes"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "metadata",
+                    "type": "bytes"
+                }
+            ],
+            "name": "transferAndAnnounce",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [{
+                    "internalType": "address",
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "ephemeralPubKey",
+                    "type": "bytes"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "metadata",
+                    "type": "bytes"
+                }
+            ],
+            "name": "transferAndStakeAndAnnounce",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [{
+                    "internalType": "address payable",
+                    "name": "messengerAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address payable",
+                    "name": "escrowAddress",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "inputs": [{
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }],
+            "name": "escrowFunding",
+            "outputs": [{
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ];
+    console.log(contractABI);
+    const contractAddress = "0xe40E453Cc62F5A4b7962d5642Fb5F66e6A462eCf";
+    const helperContract = new web3.eth.Contract(contractABI, contractAddress);
+    console.log("----------------------------------------")
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
@@ -354,5 +529,287 @@ window.onload = function() {
             event.target.classList.remove('is-valid');
             event.target.classList.add('is-invalid');
         }
+    })
+
+    const ABI = [{
+            "inputs": [{
+                    "internalType": "address",
+                    "name": "stealthAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bytes32",
+                    "name": "r",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "bytes32",
+                    "name": "s",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "uint8",
+                    "name": "v",
+                    "type": "uint8"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "random",
+                    "type": "uint256"
+                }
+            ],
+            "name": "finalizePosition",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [{
+                    "internalType": "address",
+                    "name": "requiredSigner",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "stealthAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "initiatePosition",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [{
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "positionAge",
+            "outputs": [{
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [{
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "positions",
+            "outputs": [{
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [{
+                    "internalType": "address",
+                    "name": "stealthAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bytes32",
+                    "name": "r",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "bytes32",
+                    "name": "s",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "uint8",
+                    "name": "v",
+                    "type": "uint8"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "random",
+                    "type": "uint256"
+                }
+            ],
+            "name": "rescuePosition",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ];
+    // Replace with the actual ABI of your contract
+    const contract_address = "0x2b0b589478AA5F8BA93D87C240a7e58fd15A1746"; // Replace with the actual contract address
+    const escrowContract = new web3.eth.Contract(ABI, contract_address);
+    console.log(escrowContract);
+
+    async function escrowTransaction(account, value, sta, ephk, vt, hs) {
+        console.log("escrowContract", escrowContract);
+        console.log("escrowContract", helperContract);
+        console.log("Initiating escrow tx...");
+        const nonce = await web3.eth.getTransactionCount(account);
+        spendingKeyAccount = web3.eth.accounts.privateKeyToAccount(spendingPrivateKey).address;
+
+        function generateRandomInteger(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        const random = generateRandomInteger(0, Number.MAX_SAFE_INTEGER);
+
+        console.log("random ", random);
+        console.log("sta ", sta);
+
+        var hashedMsg = stringAndBytesToKeccakHash(sta, random);
+        console.log("hashedMsg ", hashedMsg);
+
+        var hashedMsg2 = web3.utils.soliditySha3(sta, random);
+        console.log("hasedMsg ", hashedMsg2);
+
+        const signature = web3.eth.accounts.sign(hashedMsg2, spendingPrivateKey);
+        console.log("signature ", signature);
+
+        // Extract r, s, and v from the signature
+        const {
+            r,
+            s,
+            v
+        } = signature;
+        console.log("r ", r);
+        console.log("s ", s);
+        console.log("v ", v);
+
+        const signerAddress = web3.eth.accounts.recover({
+            messageHash: signature.messageHash,
+            v: v,
+            r: r,
+            s: s
+        })
+        console.log("Signer address: ", signerAddress);
+
+        const data_final = helperContract.methods.finalizeEscrowPosition(sta, r, s, parseInt(v, 16), random).encodeABI();
+        const tx_final = {
+            to: contractAddress,
+            from: spendingKeyAccount,
+            value: 0,
+            gas: 150000,
+            gasPrice: Math.ceil((await web3.eth.getGasPrice()) * 1.1),
+            data: data_final,
+        };
+        const signedTx = await web3.eth.accounts.signTransaction(tx_final, spendingPrivateKey);
+        //const tx = web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+        console.log(signedTx);
+        console.log(helperContract);
+        const encryptedTx = encrypt_raw_tx(signedTx.rawTransaction, hs).toString(16)
+        console.log(encryptedTx);
+        console.log("vt+encryptedTx", vt + encryptedTx);
+        console.log("spendingPublicKey", spendingKeyAccount);
+        const data_init = helperContract.methods.secureTransferAndStakeAndAnnounce(
+            sta,
+            ephk,
+            vt + encryptedTx,
+            spendingKeyAccount,
+            spendingKeyAccount,
+            web3.utils.toWei("0.001", 'ether')
+        ).encodeABI();
+        const tx_init = {
+            to: contractAddress,
+            from: account,
+            value: value,
+            gas: 500000,
+            gasPrice: await web3.eth.getGasPrice(),
+            nonce: nonce,
+            data: data_init,
+        };
+
+        // Send the transaction and update the modal with the transaction hash
+        web3.eth.sendTransaction(tx_init)
+            .on('transactionHash', function(hash) {
+                console.log('Transaction hash:', hash);
+            })
+            .on('receipt', function(receipt) {
+                console.log('Transaction receipt:', receipt);
+            })
+            .on('confirmation', function(confirmationNumber, receipt) {
+                console.log('Transaction confirmation number:', confirmationNumber);
+                console.log('Transaction receipt:', receipt);
+                // Update the modal status with the transaction hash
+                const shortHash = receipt.transactionHash.slice(0, 14) + '...';
+                document.getElementById('modal-status').innerHTML = `Status: Confirmed<br>Transaction Hash: <a href="https://sepolia.etherscan.io/tx/${receipt.transactionHash}" target="_blank">${shortHash}</a>`;
+            })
+            .on('error', function(error) {
+                console.error('Transaction error:', error);
+                // Update the modal status with the error message
+                document.getElementById('modal-status').innerHTML = `Status: Error<br>${error.message}`;
+            });
+        console.log(`Tx sent: ${tx_init.transactionHash}`);
+        return tx_init;
+    }
+
+    async function manage_decrypt_transaction(encryptedTx, key, stealthAddress) {
+        const decryptedTx = decrypt_tx(encryptedTx, key);
+        console.log(decryptedTx);
+        window.decryptedTx = decryptedTx;
+        console.log("ephemeralPubKey-------------------------", window.ephemeralPublicKey);
+        document.getElementById('pmodal-stealth-address').innerHTML = `Stealth Address: <a href="https://sepolia.etherscan.io/address/${stealthAddress}" target="_blank">${stealthAddress}</a>`;
+        document.getElementById('claimEscrow').classList.remove("d-none");
+        document.getElementById('pmodal-status').innerHTML = "Status: Ready";
+        const parsingModal = new bootstrap.Modal(document.getElementById('parsingModal'));
+        parsingModal.show();
+        return encryptedTx;
+    }
+    document.getElementById('claimEscrow').addEventListener('click', async function() {
+        const txReceipt = web3.eth.sendSignedTransaction(window.decryptedTx).on('transactionHash', function(hash) {
+                const shortHash = hash.slice(0, 14) + '...';
+                document.getElementById('pmodal-status').innerHTML = `Status: Pending<br>Transaction Hash: <a href="https://sepolia.etherscan.io/tx/${hash}" target="_blank">${shortHash}</a>`;
+                document.getElementById('claimEscrow').classList.add("d-none");
+            })
+            .on('receipt', function(receipt) {
+                //console.log('Transaction receipt:', receipt);
+                const confettiEffect = createConfettiEffect();
+                confettiEffect.start(window.innerWidth / 2, window.innerHeight / 3);
+            })
+            .on('confirmation', function(confirmationNumber, receipt) {
+                console.log('-------------------------------------------------------');
+                console.log('Transaction confirmation number:', confirmationNumber);
+                console.log('Transaction receipt:', receipt);
+                console.log(window.ephemeralPublicKey);
+                storeHash(window.ephemeralPublicKey);
+                if (!checkHash(window.ephemeralPublicKey)) {
+                    storeHash(window.ephemeralPublicKey);
+                }
+                const shortHash = receipt.transactionHash.slice(0, 14) + '...';
+                // Update the modal status with the transaction hash
+                document.getElementById('pmodal-status').innerHTML = `Status: Confirmed<br>Transaction Hash: <a href="https://sepolia.etherscan.io/tx/${receipt.transactionHash}" target="_blank">${shortHash}</a>`;
+            })
+            .on('error', function(error) {
+                console.error('Transaction error:', error);
+                document.getElementById('claimEscrow').classList.add("d-none");
+                if (!checkHash(window.ephemeralPublicKey)) {
+                    storeHash(window.ephemeralPublicKey);
+                }
+                // Update the modal status with the error message
+                document.getElementById('pmodal-status').innerHTML = `Status: Error<br>${error.message}<br> either the recipient has canceled the escrow transaction or it has already been executed.`;
+            });
+
+    })
+
+    $(function() {
+        $('[data-toggle="tooltip"]').tooltip()
     })
 };
