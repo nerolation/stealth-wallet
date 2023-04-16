@@ -80,7 +80,7 @@ body {
      top: 0;
 }
  .enter-button {
-     background-color: #4CAF50;
+     background-color: #0062cc;
      border: none;
      color: white;
      padding: 15px 32px;
@@ -93,16 +93,9 @@ body {
      transition-duration: 0.4s;
 }
  .enter-button:hover {
-     background-color: #45a049;
+     background-color: #024fa4;
 }
- .custom-toggle {
-     width: 5%;
-     height: 3vh;
-}
- .custom-toggle::before {
-     width: calc(5% - 2px);
-     height: calc(3vh - 2px);
-}
+
  #confetti {
      position: fixed;
      top: 0;
