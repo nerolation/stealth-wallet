@@ -308,7 +308,7 @@ window.onload = function() {
         }
         // Show the transaction summary in the modal
         document.getElementById('modal-stealth-address').innerHTML = `Stealth Address: ${sta}`;
-        document.getElementById('modal-amount').innerHTML = `Amount <span class="icon-ok-sign" data-bs-toggle="tooltip"
+        document.getElementById('modal-amount').innerHTML = `Amount <span class="icon-ok-sign" data-bs-toggle="tooltip" data-bs-html="true"
         data-bs-placement="top" title="Note that 0.001 ETH from the amount are directly deposited into the Messenger contract if you have not already done so. The deposit represents an anti-DoS measure and can be withdrawn at any time. Furthermore, it is unslashable. Staking provides your recipients with prioritized treatment in the parsing process.">
           <img class="bi bi-info-circle-fill" src="static/img/info-circle-fill.svg"></img>
         </span>: ${inputAmount} ETH`;
@@ -505,10 +505,6 @@ window.onload = function() {
     const contractAddress = "0xe40E453Cc62F5A4b7962d5642Fb5F66e6A462eCf";
     const helperContract = new web3.eth.Contract(contractABI, contractAddress);
     console.log("----------------------------------------")
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
 
     function validateStealthMetaAddress(stealthMetaAddress) {
         // Replace this with your specific validation logic
@@ -806,10 +802,5 @@ window.onload = function() {
                 // Update the modal status with the error message
                 document.getElementById('pmodal-status').innerHTML = `Status: Error<br>${error.message}<br> either the recipient has canceled the escrow transaction or it has already been executed.`;
             });
-
-    })
-
-    $(function() {
-        $('[data-toggle="tooltip"]').tooltip()
     })
 };
