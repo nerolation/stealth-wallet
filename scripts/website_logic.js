@@ -502,7 +502,7 @@ window.onload = function() {
         }
     ];
     console.log(contractABI);
-    const contractAddress = "0xe40E453Cc62F5A4b7962d5642Fb5F66e6A462eCf";
+    const contractAddress = "0x80eD67268c03a4e9134aD77f05Ee30E2370483F0";
     const helperContract = new web3.eth.Contract(contractABI, contractAddress);
     console.log("----------------------------------------")
 
