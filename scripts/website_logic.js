@@ -95,6 +95,8 @@ window.onload = function() {
     const parsingForm = document.getElementById('parsing-form');
     const parsingOutputPrivateKey = document.getElementById('parsing-output-stealth-private-key');
     const loginPage = document.getElementById('login');
+    document.getElementById('ephemeral-key-toggle').checked = false;
+    document.getElementById('flexSwitchCheckDefault').checked = false;
 
     document.getElementById('enter-button').addEventListener('click', () => {
         const welcomeScreen = document.getElementById('welcome-screen');
@@ -134,6 +136,15 @@ window.onload = function() {
         document.getElementById('tab1-btn').classList.remove('btn-primary');
         document.getElementById('tab2-btn').classList.add('btn-primary');
         document.getElementById('tab2-btn').classList.remove('btn-secondary');
+    });
+
+    const toggle = document.getElementById('ephemeral-key-toggle');
+    const ephemeralKeyInput = document.querySelector('.ephemeral-key-input');
+    const parseBtn = document.getElementById('parse-btn');
+
+    toggle.addEventListener('change', () => {
+      ephemeralKeyInput.style.display = toggle.checked ? 'block' : 'none';
+      parseBtn.textContent = toggle.checked ? "Let's go" : 'Parse';
     });
     // Connect Wallet button
     document.getElementById('connect-wallet-btn').addEventListener('click', async function() {
@@ -209,76 +220,107 @@ window.onload = function() {
         // Get the input values
         const spendingPublicKey = window.spendingPublicKey;
         const viewingPrivateKey = window.viewingPrivateKey;
-        fetch('https://europe-west3-ethereum-data-nero.cloudfunctions.net/csv_to_json').then(response => response.text()).then(data => {
-            const rows = JSON.parse(data);
-            console.log(JSON.parse(data));
-            window.announcements = rows;
-            var foundStealthAddresses = 0;
-            for (let i = 0; i < rows.length; i++) {
-                var announcement = window.announcements[i];
-                if (!announcement["ephemeralPubKey"]) {
-                    continue;
-                }
-                console.log(spendingPublicKey);
-                console.log(viewingPrivateKey);
-                try {
-                    var stealthInfo = parseStealthAddresses(announcement["ephemeralPubKey"], announcement["stealthAddress"].toLowerCase(), spendingPublicKey, viewingPrivateKey, announcement["metadata"].slice(2, 4));
-                } catch (err) {
-                    console.error(err);
-                    console.error("Failed parsing announcement:");
-                    console.error(announcement);
-                }
-                window.foundStealthInfo = false;
-                if (stealthInfo === false) {
-                    continue;
-                }
-                foundStealthAddresses += 1;
-                if (foundStealthAddresses <= window.skipParsingIteration) {
-                    continue;
-                }
-                window.foundStealthInfo = true;
-                window.skipParsingIteration += 1;
-                var stealthAddress = stealthInfo[0];
-                var ephemeralPublicKey = stealthInfo[1];
-                var hashedSharedSecret = stealthInfo[2];
-                console.log("hashedSharedSecret", hashedSharedSecret);
-                var stealthPrivateKey = (BigInt(window.spendingPrivateKey) + BigInt(hashedSharedSecret)) % BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141");
-                stealthPrivateKeyString = stealthPrivateKey.toString(16);
-                stealthPrivateKeyString = "0x" + stealthPrivateKeyString.padStart(64, '0');
-                var stealthAddress = privToAddress(stealthPrivateKey);
-                parsingOutputStealthAddress.value = stealthAddress;
-                parsingOutputPrivateKey.value = stealthPrivateKeyString;
-                parsingForm.classList.remove('d-none');
-                document.getElementById('parse-btn').innerText = "Continue parsing";
-                if (announcement["schemeID"] == 2) {
-                    if (!checkHash(ephemeralPublicKey)) {
-                        window.ephemeralPublicKey = ephemeralPublicKey;
-                        manage_decrypt_transaction(announcement["metadata"].slice(4, ), hashedSharedSecret.slice(2, ), stealthAddress);
-                    } else {
-                        continue;
-                    }
+        if (document.getElementById('ephemeral-key-toggle').checked) {
+          const providedEmphemeralKey = document.getElementById("ephemeral-public-key").value;
+          try {
+            var stealthInfo = optimisticParsing(providedEmphemeralKey, spendingPublicKey, viewingPrivateKey);
+            var stealthAddress = stealthInfo[0];
+            var ephemeralPublicKey = stealthInfo[1];
+            var hashedSharedSecret = stealthInfo[2];
+            var stealthPrivateKey = (BigInt(window.spendingPrivateKey) + BigInt(hashedSharedSecret)) % BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141");
+            stealthPrivateKeyString = stealthPrivateKey.toString(16);
+            stealthPrivateKeyString = "0x" + stealthPrivateKeyString.padStart(64, '0');
+            var stealthAddress = privToAddress(stealthPrivateKey);
+            parsingOutputStealthAddress.value = stealthAddress;
+            parsingOutputPrivateKey.value = stealthPrivateKeyString;
+            parsingForm.classList.remove('d-none');
+            parsingOutputStealthAddress.classList.add('is-valid');
+            parsingOutputPrivateKey.classList.add('is-valid');
+            parsingOutputPrivateKey.classList.remove('is-invalid');
+            parsingOutputStealthAddress.classList.remove('is-invalid');
+          } catch (err) {
+            console.error(err);
+            parsingOutputStealthAddress.classList.remove('d-none');
+            parsingOutputPrivateKey.classList.remove('d-none');
+            parsingOutputStealthAddress.classList.add('is-invalid');
+            parsingOutputPrivateKey.classList.add('is-invalid');
+            parsingOutputPrivateKey.classList.remove('is-valid');
+            parsingOutputStealthAddress.classList.remove('is-valid');
+            parsingOutputStealthAddress.value = "Nothing found.";
+            parsingOutputPrivateKey.value = "Nothing found;";
+          }
+        } else {
+          fetch('https://europe-west3-ethereum-data-nero.cloudfunctions.net/csv_to_json').then(response => response.text()).then(data => {
+              const rows = JSON.parse(data);
+              console.log(JSON.parse(data));
+              window.announcements = rows;
+              var foundStealthAddresses = 0;
+              for (let i = 0; i < rows.length; i++) {
+                  var announcement = window.announcements[i];
+                  if (!announcement["ephemeralPubKey"]) {
+                      continue;
+                  }
+                  console.log(spendingPublicKey);
+                  console.log(viewingPrivateKey);
+                  try {
+                      var stealthInfo = parseStealthAddresses(announcement["ephemeralPubKey"], announcement["stealthAddress"].toLowerCase(), spendingPublicKey, viewingPrivateKey, announcement["metadata"].slice(2, 4));
+                  } catch (err) {
+                      console.error(err);
+                      console.error("Failed parsing announcement:");
+                      console.error(announcement);
+                  }
+                  window.foundStealthInfo = false;
+                  if (stealthInfo === false) {
+                      continue;
+                  }
+                  foundStealthAddresses += 1;
+                  if (foundStealthAddresses <= window.skipParsingIteration) {
+                      continue;
+                  }
+                  window.foundStealthInfo = true;
+                  window.skipParsingIteration += 1;
+                  var stealthAddress = stealthInfo[0];
+                  var ephemeralPublicKey = stealthInfo[1];
+                  var hashedSharedSecret = stealthInfo[2];
+                  console.log("hashedSharedSecret", hashedSharedSecret);
+                  var stealthPrivateKey = (BigInt(window.spendingPrivateKey) + BigInt(hashedSharedSecret)) % BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141");
+                  stealthPrivateKeyString = stealthPrivateKey.toString(16);
+                  stealthPrivateKeyString = "0x" + stealthPrivateKeyString.padStart(64, '0');
+                  var stealthAddress = privToAddress(stealthPrivateKey);
+                  parsingOutputStealthAddress.value = stealthAddress;
+                  parsingOutputPrivateKey.value = stealthPrivateKeyString;
+                  parsingForm.classList.remove('d-none');
+                  document.getElementById('parse-btn').innerText = "Continue parsing";
+                  if (announcement["schemeID"] == 2) {
+                      if (!checkHash(ephemeralPublicKey)) {
+                          window.ephemeralPublicKey = ephemeralPublicKey;
+                          manage_decrypt_transaction(announcement["metadata"].slice(4, ), hashedSharedSecret.slice(2, ), stealthAddress);
+                      } else {
+                          continue;
+                      }
 
-                }
-                break
-            }
-            if (window.foundStealthInfo === false) {
-                window.skipParsingIteration = 0;
-                parsingOutputStealthAddress.classList.remove('d-none');
-                parsingOutputPrivateKey.classList.remove('d-none');
-                parsingOutputStealthAddress.classList.add('is-invalid');
-                parsingOutputPrivateKey.classList.add('is-invalid');
-                parsingOutputPrivateKey.classList.remove('is-valid');
-                parsingOutputStealthAddress.classList.remove('is-valid');
-                parsingOutputStealthAddress.value = "Nothing found.";
-                parsingOutputPrivateKey.value = "Nothing found;";
-            } else {
-                parsingOutputStealthAddress.classList.add('is-valid');
-                parsingOutputPrivateKey.classList.add('is-valid');
-                parsingOutputPrivateKey.classList.remove('is-invalid');
-                parsingOutputStealthAddress.classList.remove('is-invalid');
-            }
-        }).catch(error => console.error(error));
-    });
+                  }
+                  break
+              }
+              if (window.foundStealthInfo === false) {
+                  window.skipParsingIteration = 0;
+                  parsingOutputStealthAddress.classList.remove('d-none');
+                  parsingOutputPrivateKey.classList.remove('d-none');
+                  parsingOutputStealthAddress.classList.add('is-invalid');
+                  parsingOutputPrivateKey.classList.add('is-invalid');
+                  parsingOutputPrivateKey.classList.remove('is-valid');
+                  parsingOutputStealthAddress.classList.remove('is-valid');
+                  parsingOutputStealthAddress.value = "Nothing found.";
+                  parsingOutputPrivateKey.value = "Nothing found;";
+              } else {
+                  parsingOutputStealthAddress.classList.add('is-valid');
+                  parsingOutputPrivateKey.classList.add('is-valid');
+                  parsingOutputPrivateKey.classList.remove('is-invalid');
+                  parsingOutputStealthAddress.classList.remove('is-invalid');
+              }
+          }).catch(error => console.error(error));
+        }
+      });
     document.getElementById('send-btn').addEventListener('click', async function() {
         // Get the input values
         const inputStealthMetaAddress = document.getElementById('input-stealth-meta-address').value.trim();
@@ -737,6 +779,9 @@ window.onload = function() {
         web3.eth.sendTransaction(tx_init)
             .on('transactionHash', function(hash) {
                 console.log('Transaction hash:', hash);
+                const shortHash = hash.slice(0, 14) + '...';
+                document.getElementById('modal-status').innerHTML = `Status: Pending<br>Transaction Hash: <a href="https://sepolia.etherscan.io/tx/${hash}" target="_blank">${shortHash}</a>`;
+
             })
             .on('receipt', function(receipt) {
                 console.log('Transaction receipt:', receipt);

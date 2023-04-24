@@ -108,3 +108,7 @@ body {
     /* Increase the z-index value */
      display: none;
 }
+
+#ephemeral-public-key {
+  width: 100%;
+}

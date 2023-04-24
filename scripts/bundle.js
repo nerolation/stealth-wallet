@@ -41693,6 +41693,39 @@ global.parseStealthAddresses = function parseStealthAddresses(
   }
   return false;
 }
+
+global.optimisticParsing = function optimisticParsing(
+  ephemeralPublicKey_hex,
+  spendingPublicKey_hex,
+  viewingPrivateKey
+){
+  //console.log("ephemeralPublicKey_hex :",ephemeralPublicKey_hex);
+
+  var ephemeralPublicKey = secp.Point.fromHex(ephemeralPublicKey_hex.slice(2));
+  ////console.log('ephemeralPublicKey_hex:', ephemeralPublicKey_hex);
+
+  const spendingPublicKey = secp.Point.fromHex(spendingPublicKey_hex.slice(2));
+  //console.log('spendingPublicKey:', spendingPublicKey);
+
+
+  const sharedSecret = secp.getSharedSecret(BigInt(viewingPrivateKey), ephemeralPublicKey);
+  //console.log('sharedSecret:', sharedSecret);
+
+  var hashedSharedSecret = keccak256(Buffer.from(sharedSecret.slice(1)));
+  //console.log("hashedSharedSecret2 :",hashedSharedSecret);
+
+  const hashedSharedSecretPoint = secp.Point.fromPrivateKey(Buffer.from(hashedSharedSecret, "hex"));
+  //console.log('hashedSharedSecretPoint1:', hashedSharedSecretPoint);
+
+  ////console.log('hashedSharedSecretPoint:', hashedSharedSecretPoint);
+  const stealthPublicKey = spendingPublicKey.add(hashedSharedSecretPoint);
+  //console.log("stealthPublicKey :",stealthPublicKey.toHex());
+
+  const stealthAddress = toEthAddress(stealthPublicKey.toHex());
+  //console.log(stealthAddress);
+  //console.log(stealthAddress_given);
+  return [stealthAddress, ephemeralPublicKey_hex,  "0x" + hashedSharedSecret.toString('hex')];
+}
 ////console.log("parseStealthAddresses......................");
 //success = parseStealthAddresses(
 //  info["ephemeralPublicKey"],

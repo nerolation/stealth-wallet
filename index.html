@@ -50,7 +50,7 @@
                   <div id="login">
                      <div class="form-group mt-4">
                         <label for="message-input">Sign the following message to login:</label>
-                        <textarea id="message-input" class="form-control" rows="3">I want to login into my stealth wallet.</textarea>
+                        <textarea id="message-input" class="form-control mt-1 mb-1" rows="3">I want to login into my stealth wallet.</textarea>
                      </div>
                      <div class="form-group">
                         <button id="sign-message-btn" class="btn-primary w-100 btn mb-4 btn-outline-primary">Sign Message</button>
@@ -108,9 +108,16 @@ Importanty, the recipient is NOT required to pay for any transaction fees.">
                         </div>
                      </div>
                      <div id="tab2" class="tab-content" style="display: none;">
-                        <h2> Receive to stealth address</h2>
+                        <h2> Receive to a stealth address</h2>
                         <label for="input-string">Press button to start parsing for your stealth addresses:</label>
-                        <button id="parse-btn" class="btn-primary w-100 btn btn-outline-primary mb-3">Parse</button>
+                        <label for="ephemeral-key-toggle" class="mt-2 mb-2">
+                          <input type="checkbox" id="ephemeral-key-toggle"> I already know my ephemeral public key
+                        </label>
+                        <div class="ephemeral-key-input mb-2" style="display: none;">
+                          <label for="ephemeral-public-key">Ephemeral Public Key:</label>
+                          <input type="text" id="ephemeral-public-key" placeholder="Enter your ephemeral public key">
+                        </div>
+                        <button id="parse-btn" class="btn-primary w-100 btn btn-outline-primary mb-3 mt-1">Parse</button>
                         <div id="parsing-form" class="form-group d-none">
                            <label for="input-string">Stealth Address:</label>
                            <div class="input-group mb-2">
@@ -131,11 +138,13 @@ Importanty, the recipient is NOT required to pay for any transaction fees.">
                <div class="col-md-6 offset-md-3">
                   <footer class="footer mt-auto py-3 bg-light">
                      <div class="container text-center">
-                        <span style="font-size: 1.1rem;" class="text-muted">Check out <a href="https://nerolation.github.io/stealth-utils/" target="_blank">this</a> tutorial to find more info about stealth addresses. </span>
+                        <span style="font-size: 1rem;" class="text-muted">Sign up to the <a href="https://t.me/EthStealthWalletBot" target="_blank">stealth-wallet-bot</a> to receive notifications for incoming transactions.</span>
                         <br>
-                        <span style="font-size: 1.1rem;" class="text-muted">View <a href="https://github.com/nerolation/stealth-wallet" target="_blank">source code</a> on Github </span>
+                        <span style="font-size: 1rem;" class="text-muted">Check out <a href="https://nerolation.github.io/stealth-utils/" target="_blank">this</a> tutorial to find more info about stealth addresses. </span>
                         <br>
-                        <span style="font-size: 1.15rem;" class="text-muted">&copy; <a href="https://twitter.com/nero_eth" target="_blank">Toni Wahrstätter</a> 2023 </span>
+                        <span style="font-size: 1rem;" class="text-muted">View <a href="https://github.com/nerolation/stealth-wallet" target="_blank">source code</a> on Github.</span>
+                        <br>
+                        <span style="font-size: 1rem;" class="text-muted">&copy; <a href="https://twitter.com/nero_eth" target="_blank">Toni Wahrstätter</a> 2023 </span>
                      </div>
                   </footer>
                </div>
