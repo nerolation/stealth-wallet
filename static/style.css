@@ -80,7 +80,7 @@ body {
      top: 0;
 }
  .enter-button {
-     background-color: #0062cc;
+     background-color: #0d6efd;
      border: none;
      color: white;
      padding: 15px 32px;
@@ -91,6 +91,7 @@ body {
      margin: 4px 2px;
      cursor: pointer;
      transition-duration: 0.4s;
+     font-weight: bold;
 }
  .enter-button:hover {
      background-color: #024fa4;

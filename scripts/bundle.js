@@ -41631,7 +41631,7 @@ global.generateStealthInfo = function generateStealthInfo(stealthMetaAddress) {
   const sharedSecret = secp.getSharedSecret(ephemeralPrivateKey, R_pubkey_view);
   //console.log('sharedSecret:', sharedSecret);
 
-  var hashedSharedSecret = keccak256(Buffer.from(sharedSecret.slice(2)));
+  var hashedSharedSecret = keccak256(Buffer.from(sharedSecret.slice(1)));
   //console.log('hashedSharedSecret:', hashedSharedSecret);
 
   var ViewTag = hashedSharedSecret.slice(0,2);
@@ -41667,7 +41667,7 @@ global.parseStealthAddresses = function parseStealthAddresses(
   const sharedSecret = secp.getSharedSecret(BigInt(viewingPrivateKey), ephemeralPublicKey);
   //console.log('sharedSecret:', sharedSecret);
 
-  var hashedSharedSecret = keccak256(Buffer.from(sharedSecret.slice(2)));
+  var hashedSharedSecret = keccak256(Buffer.from(sharedSecret.slice(1)));
   //console.log("hashedSharedSecret2 :",hashedSharedSecret);
 
   var ViewTag = hashedSharedSecret.slice(0,2).toString('hex');
