@@ -112,3 +112,8 @@ body {
 #ephemeral-public-key {
   width: 100%;
 }
+
+.key-wrapper {
+  overflow-x: auto;
+  white-space: nowrap;
+}

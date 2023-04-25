@@ -65,6 +65,7 @@
                      <h4 class="text-center mt-3 mb-0">Your Stealth Meta-Address:</h4>
                      <div style="font-size: 0.9rem;" id="stealth-meta-address" class="user-address"></div>
                      <button class="w-100 btn btn-outline-primary" id="copybuttonSMA">Copy to Clipboard</button>
+                     <button id="show-keys-btn" class="btn-primary w-100 btn btn-outline-primary">Show me my keys</button>
                   </div>
                </div>
                <div class="row mt-2">
@@ -204,6 +205,58 @@ decrypt the transaction using the shared secret between the sender and you and t
                </div>
             </div>
          </div>
+      </div>
+
+      <!-- Show Keys Modal -->
+      <div class="modal fade" id="keysModal" tabindex="-1" aria-labelledby="keysModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title" id="keysModalLabel">Your key pairs</h5>
+            </div>
+            <div class="modal-body">
+              <!-- Spending Key Pair -->
+              <div>
+                <h5 >Spending Key Pair</h5>
+                <p class="mb-0">
+                  <strong>Private Key:</strong>
+                  <div id="keywrapper1" class="key-wrapper">
+                    <span id="spending-private-key">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span>
+                  </div>
+                  <button class="copy-btn btn btn-outline-primary">Copy</button>
+                </p>
+                <p class="mb-0">
+                  <strong>Public Key:</strong>
+                  <div id="keywrapper2" class="key-wrapper">
+                    <span id="spending-public-key">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span>
+                  </div>
+                  <button class="copy-btn btn btn-outline-primary">Copy</button>
+                </p>
+              </div>
+              <!-- Viewing Key Pair -->
+              <div>
+                <h5>Viewing Key Pair</h5>
+                <p class="mb-0">
+                  <strong>Private Key:</strong>
+                  <div id="keywrapper3" class="key-wrapper">
+                    <span id="viewing-private-key">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span>
+                  </div>
+                  <button class="copy-btn btn btn-outline-primary">Copy</button>
+                </p>
+                <p class="mb-0">
+                  <strong>Public Key:</strong>
+                  <div id="keywrapper4" class="key-wrapper">
+                    <span id="viewing-public-key">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span>
+                  </div>
+                  <button class="copy-btn btn btn-outline-primary">Copy</button>
+                </p>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- Bootstrap JS -->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

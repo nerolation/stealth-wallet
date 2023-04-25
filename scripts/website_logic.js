@@ -97,6 +97,9 @@ window.onload = function() {
     const loginPage = document.getElementById('login');
     document.getElementById('ephemeral-key-toggle').checked = false;
     document.getElementById('flexSwitchCheckDefault').checked = false;
+    const showKeysBtn = document.getElementById('show-keys-btn');
+    const keysModal = document.getElementById('keysModal');
+    const copyBtns = document.querySelectorAll('.copy-btn');
 
     document.getElementById('enter-button').addEventListener('click', () => {
         const welcomeScreen = document.getElementById('welcome-screen');
@@ -104,6 +107,38 @@ window.onload = function() {
         welcomeScreen.classList.add('hide');
         mainInterface.classList.add('move-up');
     });
+
+    showKeysBtn.addEventListener('click', () => {
+       document.getElementById('spending-private-key').textContent = window.spendingPrivateKey;
+       document.getElementById('spending-public-key').textContent = window.spendingPublicKey;
+       document.getElementById('viewing-private-key').textContent = window.viewingPrivateKey;
+       document.getElementById('viewing-public-key').textContent = window.viewingPublicKey;
+       const keysModal = new bootstrap.Modal(document.getElementById('keysModal'));
+       keysModal.show();
+     });
+
+     window.addEventListener('click', (event) => {
+       if (event.target === keysModal) {
+         keysModal.style.display = 'none';
+       }
+     });
+
+     // Clipboard functionality without library
+     copyBtns.forEach((btn) => {
+       btn.addEventListener('click', () => {
+         const textToCopy = btn.previousElementSibling.textContent.trim();
+         const textarea = document.createElement('textarea');
+         textarea.value = textToCopy;
+         keysModal.appendChild(textarea);
+         textarea.select();
+         document.execCommand('copy');
+         keysModal.removeChild(textarea);
+         btn.textContent = 'Copied!';
+         setTimeout(() => {
+           btn.textContent = 'Copy';
+         }, 2000);
+       });
+     });
 
     document.getElementById('basic-addon2').addEventListener('click', function() {
         const parsingOutputStealthAddress = document.getElementById('parsing-output-stealth-address').value;
