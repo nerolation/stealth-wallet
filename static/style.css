@@ -148,6 +148,10 @@ label {
 	width: 100%;
 }
 
+#ephemeral-key-toggle {
+  accent-color: #004225;
+}
+
 .key-wrapper {
 	overflow-x: auto;
 	white-space: nowrap;
@@ -164,4 +168,8 @@ a:active {
 .form-check-input:checked {
   background-color: #004225 !important;
 	border-color: #004225 !important;
+}
+
+.form-control.is-valid, .was-validated .form-control:valid, .form-control.is-valid::after {
+  border-color: #004225 !important;
 }
