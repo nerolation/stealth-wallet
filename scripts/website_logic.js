@@ -148,12 +148,18 @@ window.onload = function() {
 
     document.getElementById('copybuttonSPK').addEventListener('click', function() {
         copyTextFromTextField('parsing-output-stealth-private-key');
-        document.getElementById('copybuttonSPK').innerText = "Copied";
+        document.getElementById('copybuttonSPK').innerText = "Copied!";
+        setTimeout(() => {
+          document.getElementById('copybuttonSPK').innerText = 'Copy to Clipboard';
+        }, 2000);
     });
 
     document.getElementById('copybuttonSMA').addEventListener('click', function() {
         copyTextFromDiv('stealth-meta-address');
-        document.getElementById('copybuttonSMA').innerText = "Copied";
+        document.getElementById('copybuttonSMA').innerText = "Copied!";
+        setTimeout(() => {
+          document.getElementById('copybuttonSMA').innerText = 'Copy to Clipboard';
+        }, 2000);
     });
 
     document.getElementById('tab1-btn').addEventListener('click', function() {

@@ -1,24 +1,37 @@
 body {
      background-color: #f5f5f5;
 }
- h1 {
-     color: #333;
-     font-size: 3rem;
-     font-weight: 600;
-     text-align: center;
+h1 {
+   color: #333;
+   font-size: 3rem;
+   font-weight: 600;
+   text-align: center;
 }
- .btn-primary {
-     background-color: #004225;
-     border-color: #004225;
+
+ .btn-primary, .btn-primary:focus, .btn-primary:active, .btn-primary:visited {
+     background-color: #004225 !important;
+     border-color: #004225 !important;
      color: #fff;
      font-weight: 600;
      text-transform: uppercase;
 }
- .btn-primary:hover, .btn-primary:focus {
-     background-color: #012b18;
-     border-color: #012b18;
+ .btn-primary:hover {
+     background-color: #012b18 !important;
+     border-color: #012b18 !important;
      color: #fff;
 }
+
+.bright-btn {
+  border-color: #004225 !important;
+  color: #004225 !important;
+}
+
+.bright-btn:hover {
+  background-color: #012b18 !important;
+  border-color: #012b18 !important;
+  color: #f5f5f5 !important;
+}
+
  label {
      font-weight: 600;
 }
@@ -92,6 +105,7 @@ body {
      cursor: pointer;
      transition-duration: 0.4s;
      font-weight: bold;
+     border-radius: 8px;
 }
  .enter-button:hover {
      background-color: #012b18;

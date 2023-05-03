@@ -64,13 +64,18 @@
             <div id="personalSign"></div>
             <div id="user-stealth-meta-address" class="d-none">
                <div class="row">
-                  <div class="col-md-6 offset-md-3 .text-center mb-4">
+                  <div class="col-md-6 offset-md-3 .text-center">
                      <h4 class="text-center mt-3 mb-0">Your Stealth Meta-Address:</h4>
                      <div style="font-size: 0.9rem;" id="stealth-meta-address" class="user-address"></div>
-                     <button class="w-100 btn btn-outline-primary" id="copybuttonSMA">Copy to Clipboard</button>
-                     <button id="show-keys-btn" class="btn-primary w-100 btn btn-outline-primary">Show me my keys</button>
-                  </div>
+                   </div>
+                </div>
+               <div class="row">
+                  <div class="col-md-6 offset-md-3 d-flex justify-content-center mb-4">
+                   <button class="w-100 btn btn-outline-primary bright-btn" id="copybuttonSMA">Copy to Clipboard</button>
+                   <button id="show-keys-btn" class="w-100 btn btn-outline-primary bright-btn">Show me my keys</button>
+                 </div>
                </div>
+
                <div class="row mt-2">
                   <div class="col-md-6 offset-md-3 d-flex justify-content-center">
                      <button id="tab1-btn" type="button" class="btn btn-primary w-50">Send</button>
@@ -136,7 +141,7 @@ Importanty, the recipient is NOT required to pay for any transaction fees.">
                            </div>
                            <label for="input-string">Stealth Private Key:</label>
                            <input id="parsing-output-stealth-private-key" class="form-control" type="text" placeholder="0x..." readonly>
-                           <button class="w-100 btn btn-outline-primary" id="copybuttonSPK">Copy to Clipboard</button>
+                           <button class="w-100 btn btn-outline-primary copy-btn bright-btn" id="copybuttonSPK">Copy to Clipboard</button>
                         </div>
                      </div>
                   </div>
@@ -230,14 +235,14 @@ decrypt the transaction using the shared secret between the sender and you and t
                   <div id="keywrapper1" class="key-wrapper pb-3">
                     <span id="spending-private-key">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span>
                   </div>
-                  <button class="copy-btn btn btn-outline-primary pb-2">Copy</button>
+                  <button class="copy-btn btn btn-outline-primary pb-2 bright-btn">Copy</button>
                 </p>
                 <p class="mb-0">
                   <strong>Public Key:</strong>
                   <div id="keywrapper2" class="key-wrapper pb-3">
                     <span id="spending-public-key">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span>
                   </div>
-                  <button class="copy-btn btn btn-outline-primary">Copy</button>
+                  <button class="copy-btn btn btn-outline-primary bright-btn">Copy</button>
                 </p>
               </div>
               <!-- Viewing Key Pair -->
@@ -248,14 +253,14 @@ decrypt the transaction using the shared secret between the sender and you and t
                   <div id="keywrapper3" class="key-wrapper pb-3">
                     <span id="viewing-private-key">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span>
                   </div>
-                  <button class="copy-btn btn btn-outline-primary">Copy</button>
+                  <button class="copy-btn btn btn-outline-primary bright-btn">Copy</button>
                 </p>
                 <p class="mb-0">
                   <strong>Public Key:</strong>
                   <div id="keywrapper4" class="key-wrapper pb-3">
                     <span id="viewing-public-key">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■</span>
                   </div>
-                  <button class="copy-btn btn btn-outline-primary">Copy</button>
+                  <button class="copy-btn btn btn-outline-primary bright-btn">Copy</button>
                 </p>
               </div>
             </div>
