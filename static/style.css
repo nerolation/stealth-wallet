@@ -8,15 +8,15 @@ body {
      text-align: center;
 }
  .btn-primary {
-     background-color: #007bff;
-     border-color: #007bff;
+     background-color: #004225;
+     border-color: #004225;
      color: #fff;
      font-weight: 600;
      text-transform: uppercase;
 }
  .btn-primary:hover, .btn-primary:focus {
-     background-color: #0062cc;
-     border-color: #0062cc;
+     background-color: #012b18;
+     border-color: #012b18;
      color: #fff;
 }
  label {
@@ -24,7 +24,7 @@ body {
 }
  .user-address {
      background-color: #fff;
-     border: 2px solid #007bff;
+     border: 2px solid #004225;
      border-radius: 5px;
      color: #333;
      font-weight: 600;
@@ -80,7 +80,7 @@ body {
      top: 0;
 }
  .enter-button {
-     background-color: #0d6efd;
+     background-color: #004225;
      border: none;
      color: white;
      padding: 15px 32px;
@@ -94,7 +94,7 @@ body {
      font-weight: bold;
 }
  .enter-button:hover {
-     background-color: #024fa4;
+     background-color: #012b18;
 }
 
  #confetti {

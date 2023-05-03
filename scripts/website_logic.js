@@ -176,6 +176,8 @@ window.onload = function() {
     const toggle = document.getElementById('ephemeral-key-toggle');
     const ephemeralKeyInput = document.querySelector('.ephemeral-key-input');
     const parseBtn = document.getElementById('parse-btn');
+    const starterInfo = document.getElementById('starter-info');
+
 
     toggle.addEventListener('change', () => {
       ephemeralKeyInput.style.display = toggle.checked ? 'block' : 'none';
@@ -198,6 +200,7 @@ window.onload = function() {
                 userAddressElement.classList.remove('d-none');
                 loginPage.classList.remove('d-none');
                 interactionElements.classList.add('d-none');
+                //starterInfo.classList.add("d-none");
             } catch (error) {
                 console.log('Metamask connection error:', error);
             }
@@ -251,7 +254,7 @@ window.onload = function() {
         }
     });
     window.skipParsingIteration = 0;
-    document.getElementById('parse-btn').addEventListener('click', async function() {
+    parseBtn.addEventListener('click', async function() {
         // Get the input values
         const spendingPublicKey = window.spendingPublicKey;
         const viewingPrivateKey = window.viewingPrivateKey;
@@ -285,6 +288,9 @@ window.onload = function() {
             parsingOutputPrivateKey.value = "Nothing found;";
           }
         } else {
+          parseBtn.innerHTML = '<span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span> Loading...'
+          const loadingSpinner = document.getElementById('loading-spinner');
+          loadingSpinner.classList.remove('d-none');
           fetch('https://europe-west3-ethereum-data-nero.cloudfunctions.net/csv_to_json').then(response => response.text()).then(data => {
               const rows = JSON.parse(data);
               console.log(JSON.parse(data));
@@ -325,7 +331,7 @@ window.onload = function() {
                   parsingOutputStealthAddress.value = stealthAddress;
                   parsingOutputPrivateKey.value = stealthPrivateKeyString;
                   parsingForm.classList.remove('d-none');
-                  document.getElementById('parse-btn').innerText = "Continue parsing";
+                  parseBtn.innerHTML = '<span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>Continue parsing';
                   if (announcement["schemeID"] == 2) {
                       if (!checkHash(ephemeralPublicKey)) {
                           window.ephemeralPublicKey = ephemeralPublicKey;
@@ -347,11 +353,14 @@ window.onload = function() {
                   parsingOutputStealthAddress.classList.remove('is-valid');
                   parsingOutputStealthAddress.value = "Nothing found.";
                   parsingOutputPrivateKey.value = "Nothing found;";
+                  loadingSpinner.classList.add('d-none');
+                  parseBtn.innerHTML = '<span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>Parse';
               } else {
                   parsingOutputStealthAddress.classList.add('is-valid');
                   parsingOutputPrivateKey.classList.add('is-valid');
                   parsingOutputPrivateKey.classList.remove('is-invalid');
                   parsingOutputStealthAddress.classList.remove('is-invalid');
+                  loadingSpinner.classList.add('d-none');
               }
           }).catch(error => console.error(error));
         }
@@ -419,6 +428,8 @@ window.onload = function() {
                 })
                 .on('receipt', function(receipt) {
                     console.log('Transaction receipt:', receipt);
+                    const confettiEffect = createConfettiEffect();
+                    confettiEffect.start(window.innerWidth / 2, window.innerHeight / 3);
                 })
                 .on('confirmation', function(confirmationNumber, receipt) {
                     console.log('Transaction confirmation number:', confirmationNumber);
@@ -820,6 +831,8 @@ window.onload = function() {
             })
             .on('receipt', function(receipt) {
                 console.log('Transaction receipt:', receipt);
+                const confettiEffect = createConfettiEffect();
+                confettiEffect.start(window.innerWidth / 2, window.innerHeight / 3);
             })
             .on('confirmation', function(confirmationNumber, receipt) {
                 console.log('Transaction confirmation number:', confirmationNumber);

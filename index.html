@@ -41,11 +41,14 @@
             <div class="row">
                <div class="col-md-6 offset-md-3">
                   <h1 class="text-center mb-4">Stealth Wallet</h1>
-                  <h5 class="text-center">Connect your Metamask wallet</h5>
-                  <p class="text-center mb-4">⚠️ Sepolia test net only ⚠️</p>
-                  <div class="form-group">
-                     <button id="connect-wallet-btn" class="btn-primary w-100 btn btn-outline-primary">Connect Wallet</button>
+                  <div id="starter-info">
+                    <h5 class="text-center">Connect your Metamask wallet</h5>
+                    <p class="text-center mb-4">⚠️ Sepolia test net only ⚠️</p>
+                    <div class="form-group">
+                       <button id="connect-wallet-btn" class="btn-primary w-100 btn btn-outline-primary">Connect Wallet</button>
+                    </div>
                   </div>
+
                   <div id="user-address" class="user-address d-none"></div>
                   <div id="login">
                      <div class="form-group mt-4">
@@ -113,12 +116,16 @@ Importanty, the recipient is NOT required to pay for any transaction fees.">
                         <label for="input-string">Press button to start parsing for your stealth addresses:</label>
                         <label for="ephemeral-key-toggle" class="mt-2 mb-2">
                           <input type="checkbox" id="ephemeral-key-toggle"> I already know my ephemeral public key
+                          <span class="icon-ok-sign" data-bs-toggle="tooltip"
+                             data-bs-placement="top" data-bs-html="true" title="If you already know the ephemeral public key to one of your stealth addresses, then you can skip the parsing and directly retrieve you stealth private key (even without any internet connection).">
+                          <img class="bi bi-info-circle-fill" src="static/img/info-circle-fill.svg"></img>
+                          </span>
                         </label>
                         <div class="ephemeral-key-input mb-2" style="display: none;">
                           <label for="ephemeral-public-key">Ephemeral Public Key:</label>
                           <input type="text" id="ephemeral-public-key" placeholder="Enter your ephemeral public key">
                         </div>
-                        <button id="parse-btn" class="btn-primary w-100 btn btn-outline-primary mb-3 mt-1">Parse</button>
+                        <button id="parse-btn" class="btn-primary w-100 btn btn-outline-primary mb-3 mt-1"><span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>Parse</button>
                         <div id="parsing-form" class="form-group d-none">
                            <label for="input-string">Stealth Address:</label>
                            <div class="input-group mb-2">
@@ -128,7 +135,7 @@ Importanty, the recipient is NOT required to pay for any transaction fees.">
                               </div>
                            </div>
                            <label for="input-string">Stealth Private Key:</label>
-                           <input id="parsing-output-stealth-private-key" class="form-control mb-1" type="text" placeholder="0x..." readonly>
+                           <input id="parsing-output-stealth-private-key" class="form-control" type="text" placeholder="0x..." readonly>
                            <button class="w-100 btn btn-outline-primary" id="copybuttonSPK">Copy to Clipboard</button>
                         </div>
                      </div>
@@ -188,7 +195,7 @@ Importanty, the recipient is NOT required to pay for any transaction fees.">
                   <div class="col text-center">
                      <div class="d-grid gap-2 col-6 mx-auto">
                         <button id="claimEscrow" type="button" class="btn btn-success" data-placement="top" data-toggle="tooltip" title='It looks like the sender
-of the transaction selected the escrow process and prepared a signed but decrypted transaction from the escrow to your stealth address. You can
+of the transaction selected the escrow process and prepared a signed but encrypted transaction from the escrow to your stealth address. You can
 decrypt the transaction using the shared secret between the sender and you and then broadcast it.'>
                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
                               <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
