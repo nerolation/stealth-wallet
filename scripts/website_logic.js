@@ -294,7 +294,7 @@ window.onload = function() {
             parsingOutputPrivateKey.value = "Nothing found;";
           }
         } else {
-          parseBtn.innerHTML = '<span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span> Loading...'
+          parseBtn.innerHTML = '<span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span> Parsing...'
           const loadingSpinner = document.getElementById('loading-spinner');
           loadingSpinner.classList.remove('d-none');
           fetch('https://europe-west3-ethereum-data-nero.cloudfunctions.net/csv_to_json').then(response => response.text()).then(data => {
